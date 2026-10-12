@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Điểm danh QR</title>
+  <title>Điểm danh bằng mã QR</title>
 
   <script src="https://unpkg.com/html5-qrcode"></script>
 
@@ -23,11 +23,12 @@
       padding: 25px;
       border-radius: 16px;
       text-align: center;
-      box-shadow: 0 3px 15px rgba(0,0,0,0.15);
+      box-shadow: 0 3px 15px rgba(0, 0, 0, 0.15);
     }
 
     h1 {
       color: #1e3a8a;
+      margin-top: 0;
     }
 
     #reader {
@@ -42,6 +43,7 @@
       font-size: 20px;
       font-weight: bold;
       background: #f1f5f9;
+      min-height: 30px;
     }
 
     .xanh {
@@ -66,7 +68,7 @@
   <div class="khung">
     <h1>ĐIỂM DANH BẰNG MÃ QR</h1>
 
-    <p>Đưa mã QR của học sinh vào giữa khung camera.</p>
+    <p>Đưa mã QR vào giữa khung camera.</p>
 
     <div id="reader"></div>
 
@@ -76,11 +78,14 @@
   </div>
 
   <script>
+    // DÁN ĐƯỜNG DẪN APPS SCRIPT CỦA THẦY VÀO GIỮA HAI DẤU NGOẶC KÉP
     const URL_APPS_SCRIPT =
-      "https://script.google.com/macros/s/AKfycbwM1DtBF6Vhd4h8CErnbM9b1zsrhnbcFxnoeAkkpmV1Z3UfN9p133V0EjlZL8KsAX50/exec";
+      "https://script.google.com/macros/s/AKfycbxt3lyP1-PRl9mMOH1o7v1sgIkXBnR51-Of-7Wurcc-NG88r8RO5H3eBFSiGhuh8T0B9A/exec";
 
     let dangXuLy = false;
     let maVuaQuet = "";
+    let scanner = null;
+    let scriptDangGui = null;
 
     function hienThi(noiDung, lop) {
       const ketQua = document.getElementById("ketQua");
@@ -88,94 +93,136 @@
       ketQua.className = lop || "";
     }
 
-    function taoTenHam() {
-      return "nhanKetQua_" + Date.now();
+    function xoaScriptDangGui() {
+      if (scriptDangGui) {
+        scriptDangGui.remove();
+        scriptDangGui = null;
+      }
+    }
+
+    function moKhoaQuetSau(delay) {
+      setTimeout(function() {
+        dangXuLy = false;
+        maVuaQuet = "";
+        hienThi("Sẵn sàng quét mã QR", "");
+
+        // Bật lại camera
+        if (scanner) {
+          try {
+            scanner.resume();
+          } catch (loi) {
+            console.log("Không cần resume camera:", loi);
+          }
+        }
+      }, delay);
     }
 
     function guiMaQR(maQR) {
-      if (dangXuLy) return;
-      if (maQR === maVuaQuet) return;
+      maQR = String(maQR || "").trim().toUpperCase();
+
+      if (!maQR) {
+        return;
+      }
+
+      // Chặn ngay từ trình duyệt
+      if (dangXuLy) {
+        return;
+      }
+
+      if (maQR === maVuaQuet) {
+        return;
+      }
 
       dangXuLy = true;
       maVuaQuet = maQR;
 
+      // Dừng quét ngay sau lần nhận đầu tiên
+      if (scanner) {
+        try {
+          scanner.pause(true);
+        } catch (loi) {
+          console.log("Không thể pause camera:", loi);
+        }
+      }
+
       hienThi("Đang kiểm tra mã: " + maQR, "vang");
 
-      const tenHam = taoTenHam();
+      const tenHam = "nhanKetQua_" + Date.now();
+
+      let daNhanKetQua = false;
 
       window[tenHam] = function(ketQua) {
-        if (ketQua.thanhCong) {
+        if (daNhanKetQua) {
+          return;
+        }
+
+        daNhanKetQua = true;
+
+        xoaScriptDangGui();
+
+        if (ketQua && ketQua.thanhCong) {
           hienThi(
             "✓ " + ketQua.hoTen +
-            " - Lớp " + ketQua.lop +
+            "\nLớp: " + ketQua.lop +
             "\nĐiểm danh thành công",
             "xanh"
           );
         } else {
           hienThi(
-            "⚠ " + ketQua.thongBao,
+            "⚠ " + (ketQua.thongBao || "Không thể điểm danh"),
             "do"
           );
         }
 
-        xoaTheScript();
+        delete window[tenHam];
 
-        setTimeout(function() {
-          dangXuLy = false;
-          maVuaQuet = "";
-          hienThi("Sẵn sàng quét mã QR", "");
-        }, 2500);
+        // Chỉ mở lại sau 2,5 giây
+        moKhoaQuetSau(2500);
       };
 
-      const theScript = document.createElement("script");
+      scriptDangGui = document.createElement("script");
 
-      theScript.src =
+      scriptDangGui.src =
         URL_APPS_SCRIPT +
         "?maQR=" + encodeURIComponent(maQR) +
-        "&callback=" + tenHam;
+        "&callback=" + encodeURIComponent(tenHam);
 
-      theScript.id = "script-" + tenHam;
-
-      theScript.noscript = function() {
-        hienThi("Lỗi kết nối Google Sheets", "do");
-        xoaTheScript();
-
-        setTimeout(function() {
-          dangXuLy = false;
-          maVuaQuet = "";
-          hienThi("Sẵn sàng quét mã QR", "");
-        }, 2500);
-      };
-
-      document.body.appendChild(theScript);
-
-      function xoaTheScript() {
-        const theCu = document.getElementById("script-" + tenHam);
-        if (theCu) {
-          theCu.remove();
+      scriptDangGui.noscript = function() {
+        if (daNhanKetQua) {
+          return;
         }
 
+        daNhanKetQua = true;
+
+        xoaScriptDangGui();
         delete window[tenHam];
-      }
+
+        hienThi("Lỗi kết nối Google Sheets", "do");
+
+        // Mở lại camera sau 3 giây nếu có lỗi
+        moKhoaQuetSau(3000);
+      };
+
+      document.body.appendChild(scriptDangGui);
     }
 
     function khiQuetThanhCong(maQR) {
-      maQR = String(maQR).trim().toUpperCase();
       guiMaQR(maQR);
     }
 
     function khiQuetThatBai() {
-      // Không hiển thị lỗi liên tục khi camera chưa đọc được mã
+      // Không hiển thị lỗi liên tục khi camera chưa nhận diện được mã
     }
 
-    const scanner = new Html5QrcodeScanner(
+    scanner = new Html5QrcodeScanner(
       "reader",
       {
         fps: 10,
         qrbox: {
           width: 300,
           height: 300
-        }
+        },
+        rememberLastUsedCamera: true
       },
       false
     );
