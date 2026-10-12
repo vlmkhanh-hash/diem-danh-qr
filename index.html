@@ -2,37 +2,19 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
-  <meta
-    name="description"
-    content="Hệ thống điểm danh học sinh bằng mã QR"
-  >
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title>Điểm danh QR - Trường Tiểu học Hòa Ninh</title>
 
-  <!-- Khóa phiên bản thư viện để tránh thay đổi ngoài ý muốn -->
-  <script
-    src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"
-    defer
-  ></script>
+  <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 
   <style>
     :root {
       --primary: #087f5b;
       --primary-dark: #065f46;
-      --success: #15803d;
-      --danger: #b91c1c;
-      --warning: #b45309;
       --text: #17324d;
       --muted: #64748b;
-      --border: #dbe5ec;
-      --card: rgba(255, 255, 255, 0.97);
-      --shadow: 0 15px 35px rgba(0, 0, 0, 0.18);
+      --card: rgba(255,255,255,0.96);
     }
 
     * {
@@ -43,35 +25,22 @@
       display: none !important;
     }
 
-    html {
-      scroll-behavior: smooth;
-    }
-
     body {
       margin: 0;
       min-height: 100vh;
       font-family: Arial, Helvetica, sans-serif;
       color: var(--text);
-
-      background-color: #064e3b;
-      background-image:
-        radial-gradient(
-          circle at 20% 20%,
-          rgba(255, 255, 255, 0.14),
-          transparent 32%
-        ),
-        radial-gradient(
-          circle at 80% 10%,
-          rgba(59, 130, 246, 0.22),
-          transparent 30%
+      background:
+        linear-gradient(
+          rgba(0, 55, 43, 0.65),
+          rgba(0, 55, 43, 0.65)
         ),
         linear-gradient(
           135deg,
           #064e3b,
-          #087f5b 48%,
+          #087f5b 50%,
           #0f766e
         );
-
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
@@ -87,63 +56,43 @@
     }
 
     button {
-      touch-action: manipulation;
+      cursor: pointer;
     }
 
     .app {
       width: min(1450px, 100%);
-      margin: 0 auto;
+      margin: auto;
       padding: 20px;
     }
 
     .header {
-      position: relative;
       display: flex;
       align-items: center;
-      gap: 20px;
+      gap: 18px;
       padding: 22px;
       color: white;
-      border: 1px solid rgba(255, 255, 255, 0.22);
-      border-radius: 24px;
+      border-radius: 22px;
       background:
         linear-gradient(
           135deg,
-          color-mix(in srgb, var(--primary) 94%, black),
-          color-mix(in srgb, var(--primary) 72%, #0f172a)
+          var(--primary),
+          var(--primary-dark)
         );
-      box-shadow: var(--shadow);
-      overflow: hidden;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.2);
     }
 
-    .header::after {
-      content: "";
-      position: absolute;
-      width: 230px;
-      height: 230px;
-      right: -80px;
-      top: -100px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.08);
-      pointer-events: none;
-    }
-
-    .school-logo {
-      position: relative;
-      z-index: 1;
-      width: 96px;
-      height: 96px;
-      flex: 0 0 96px;
-      object-fit: contain;
+    .logo {
+      width: 92px;
+      height: 92px;
+      flex: 0 0 92px;
       padding: 5px;
+      object-fit: contain;
+      border: 3px solid white;
       border-radius: 50%;
-      border: 3px solid rgba(255, 255, 255, 0.9);
       background: white;
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
     }
 
     .header-content {
-      position: relative;
-      z-index: 1;
       flex: 1;
       min-width: 0;
     }
@@ -152,90 +101,54 @@
       margin: 0;
       font-size: clamp(25px, 4vw, 42px);
       line-height: 1.15;
-      word-break: break-word;
     }
 
     .header-content p {
-      margin: 9px 0 0;
-      font-size: 16px;
+      margin: 8px 0 0;
       line-height: 1.5;
-      opacity: 0.95;
     }
 
     .settings-button {
-      position: relative;
-      z-index: 2;
-      flex-shrink: 0;
-      padding: 12px 17px;
+      padding: 12px 16px;
       color: var(--primary);
-      font-weight: 700;
-      border: 0;
-      border-radius: 12px;
+      font-weight: bold;
+      border: none;
+      border-radius: 10px;
       background: white;
-      cursor: pointer;
-      box-shadow: 0 5px 14px rgba(0, 0, 0, 0.16);
-      transition:
-        transform 0.15s ease,
-        box-shadow 0.15s ease;
+      white-space: nowrap;
     }
 
-    .settings-button:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
-    }
-
-    .settings-button:active {
-      transform: translateY(1px);
-    }
-
-    .settings-button:focus-visible,
-    button:focus-visible,
-    input:focus-visible {
-      outline: 3px solid rgba(59, 130, 246, 0.45);
-      outline-offset: 2px;
-    }
-
-    .information-bar {
+    .info-bar {
       display: flex;
       justify-content: space-between;
       flex-wrap: wrap;
       gap: 10px;
       margin: 18px 0;
-    }
-
-    .information-label {
-      padding: 10px 15px;
       color: white;
-      border: 1px solid rgba(255, 255, 255, 0.18);
-      border-radius: 12px;
-      background: rgba(255, 255, 255, 0.14);
-      backdrop-filter: blur(8px);
     }
 
-    .system-state {
-      font-weight: 700;
+    .info-item {
+      padding: 10px 14px;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 10px;
+      background: rgba(255,255,255,0.14);
     }
 
     .layout {
       display: grid;
-      grid-template-columns:
-        minmax(0, 1.08fr)
-        minmax(360px, 0.92fr);
+      grid-template-columns: 1.08fr 0.92fr;
       gap: 20px;
     }
 
     .card {
       min-width: 0;
       padding: 22px;
-      border-radius: 21px;
+      border-radius: 20px;
       background: var(--card);
-      box-shadow: var(--shadow);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.18);
     }
 
-    .card-title {
-      display: flex;
-      align-items: center;
-      gap: 9px;
+    .card h2 {
       margin: 0 0 17px;
       color: var(--primary);
       font-size: 22px;
@@ -243,71 +156,62 @@
 
     #reader {
       width: 100%;
-      max-width: 610px;
+      max-width: 600px;
       min-height: 190px;
-      margin: 0 auto 18px;
+      margin: auto;
       overflow: hidden;
-      border: 3px solid
-        color-mix(in srgb, var(--primary) 28%, white);
-      border-radius: 17px;
+      border: 3px solid #d8eee6;
+      border-radius: 16px;
       background: white;
-    }
-
-    #reader video {
-      border-radius: 12px;
     }
 
     #reader button {
       padding: 9px 12px;
       color: white;
-      border: 0;
+      border: none;
       border-radius: 8px;
       background: var(--primary);
-      cursor: pointer;
     }
 
     #reader select {
       max-width: 100%;
       padding: 8px;
-      border: 1px solid var(--border);
+      border: 1px solid #cbd5e1;
       border-radius: 8px;
     }
 
-    .result-box {
+    .result {
       display: flex;
       align-items: center;
       justify-content: center;
-      min-height: 92px;
+      min-height: 90px;
+      margin-top: 18px;
       padding: 18px;
       text-align: center;
       white-space: pre-line;
       font-size: 19px;
-      font-weight: 700;
-      line-height: 1.55;
-      border: 1px solid #dce4ec;
-      border-radius: 15px;
+      font-weight: bold;
+      line-height: 1.5;
+      border-radius: 14px;
       background: #edf2f7;
     }
 
-    .result-success {
+    .success {
       color: #166534;
-      border-color: #86efac;
       background: #dcfce7;
     }
 
-    .result-error {
+    .error {
       color: #991b1b;
-      border-color: #fca5a5;
       background: #fee2e2;
     }
 
-    .result-warning {
+    .warning {
       color: #92400e;
-      border-color: #fcd34d;
       background: #fef3c7;
     }
 
-    .button-group {
+    .buttons {
       display: flex;
       flex-wrap: wrap;
       gap: 10px;
@@ -315,24 +219,10 @@
     }
 
     .button {
-      min-height: 43px;
       padding: 11px 15px;
-      font-weight: 700;
-      border: 0;
+      font-weight: bold;
+      border: none;
       border-radius: 10px;
-      cursor: pointer;
-      transition:
-        opacity 0.15s ease,
-        transform 0.15s ease;
-    }
-
-    .button:hover:not(:disabled) {
-      transform: translateY(-1px);
-    }
-
-    .button:disabled {
-      opacity: 0.58;
-      cursor: not-allowed;
     }
 
     .button-primary {
@@ -341,7 +231,7 @@
     }
 
     .button-secondary {
-      color: #263238;
+      color: #1e293b;
       background: #e2e8f0;
     }
 
@@ -350,78 +240,78 @@
       background: #fee2e2;
     }
 
+    .button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
     .statistics {
       display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 14px;
     }
 
-    .statistic {
-      min-height: 118px;
+    .stat {
+      min-height: 115px;
       padding: 18px;
       color: white;
-      border-radius: 17px;
-      box-shadow: 0 7px 18px rgba(15, 23, 42, 0.12);
+      border-radius: 16px;
     }
 
-    .statistic h3 {
+    .stat h3 {
       margin: 0 0 12px;
       font-size: 15px;
-      font-weight: 600;
     }
 
-    .statistic-number {
-      font-size: 36px;
-      font-weight: 800;
-      line-height: 1;
+    .number {
+      font-size: 35px;
+      font-weight: bold;
     }
 
-    .statistic-total {
+    .stat-total {
       background: linear-gradient(135deg, #1971c2, #1864ab);
     }
 
-    .statistic-present {
+    .stat-present {
       background: linear-gradient(135deg, #2f9e44, #087f5b);
     }
 
-    .statistic-absent {
+    .stat-absent {
       background: linear-gradient(135deg, #e03131, #c92a2a);
     }
 
-    .statistic-rate {
+    .stat-rate {
       background: linear-gradient(135deg, #7048e8, #5f3dc4);
     }
 
-    .subheading {
+    .section-title {
       margin: 23px 0 10px;
       color: var(--primary);
       font-size: 18px;
-      font-weight: 700;
+      font-weight: bold;
     }
 
     .student-list {
-      min-height: 52px;
       max-height: 280px;
+      min-height: 50px;
       overflow-y: auto;
-      border: 1px solid var(--border);
-      border-radius: 13px;
+      border: 1px solid #dbe5ec;
+      border-radius: 12px;
       background: #f8fafc;
     }
 
     .student-row {
-      padding: 12px 13px;
+      padding: 12px;
       border-bottom: 1px solid #e5e7eb;
-      line-height: 1.55;
+      line-height: 1.5;
     }
 
     .student-row:last-child {
-      border-bottom: 0;
+      border-bottom: none;
     }
 
     .student-row strong {
       display: block;
-      margin-bottom: 2px;
-      color: #0f172a;
     }
 
     .student-meta {
@@ -429,78 +319,60 @@
       font-size: 14px;
     }
 
-    .empty-message {
-      padding: 17px;
+    .empty {
+      padding: 16px;
       color: var(--muted);
       text-align: center;
     }
 
     /* Hộp cài đặt */
 
-    .modal-overlay {
+    .overlay {
       position: fixed;
       inset: 0;
-      z-index: 99999;
+      z-index: 9999;
       display: flex;
       align-items: flex-start;
       justify-content: center;
-      padding: 25px 18px;
+      padding: 24px 16px;
       overflow-y: auto;
-      background: rgba(15, 23, 42, 0.72);
-      backdrop-filter: blur(4px);
+      background: rgba(15,23,42,0.75);
     }
 
-    .settings-dialog {
-      width: min(690px, 100%);
+    .dialog {
+      width: min(680px, 100%);
       margin: auto;
       overflow: hidden;
-      border-radius: 21px;
+      border-radius: 20px;
       background: white;
-      box-shadow: 0 22px 70px rgba(0, 0, 0, 0.4);
-      animation: showDialog 0.18s ease;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.35);
     }
 
-    @keyframes showDialog {
-      from {
-        opacity: 0;
-        transform: translateY(-12px) scale(0.98);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-      }
-    }
-
-    .settings-header {
+    .dialog-header {
       display: flex;
-      align-items: center;
       justify-content: space-between;
-      gap: 15px;
-      padding: 20px 22px;
+      align-items: center;
+      padding: 18px 22px;
       color: white;
       background: var(--primary);
     }
 
-    .settings-header h2 {
+    .dialog-header h2 {
       margin: 0;
-      font-size: 22px;
-    }
-
-    .close-button {
-      width: 40px;
-      height: 40px;
-      flex: 0 0 40px;
       color: white;
-      font-size: 25px;
-      line-height: 1;
-      border: 0;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.16);
-      cursor: pointer;
     }
 
-    .settings-body {
+    .close-x {
+      width: 38px;
+      height: 38px;
+      color: white;
+      font-size: 24px;
+      border: none;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.18);
+    }
+
+    .dialog-body {
       padding: 22px;
     }
 
@@ -511,54 +383,36 @@
     .form-group label {
       display: block;
       margin-bottom: 7px;
-      color: #1e293b;
-      font-weight: 700;
+      font-weight: bold;
     }
 
     .form-group input[type="text"],
-    .form-group input[type="file"],
-    .form-group input[type="color"] {
+    .form-group input[type="color"],
+    .form-group input[type="file"] {
       width: 100%;
-      min-height: 45px;
-      padding: 10px 11px;
-      color: #0f172a;
+      min-height: 44px;
+      padding: 9px;
       border: 1px solid #cbd5e1;
       border-radius: 9px;
       background: white;
     }
 
     .form-group input[type="color"] {
-      padding: 4px;
-      cursor: pointer;
+      padding: 3px;
     }
 
-    .file-actions {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 9px;
-      margin-top: 9px;
-    }
-
-    .file-note {
-      margin-top: 7px;
-      color: var(--muted);
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .selection-state {
-      margin-top: 7px;
+    .file-state {
+      margin-top: 6px;
       color: var(--primary);
       font-size: 13px;
-      font-weight: 700;
+      font-weight: bold;
     }
 
-    .settings-note {
-      margin: 5px 0 18px;
-      padding: 13px;
+    .dialog-note {
+      padding: 12px;
       color: #475569;
       font-size: 14px;
-      line-height: 1.55;
+      line-height: 1.5;
       border-left: 4px solid var(--primary);
       border-radius: 8px;
       background: #f1f5f9;
@@ -568,12 +422,11 @@
       margin-bottom: 15px;
       padding: 12px;
       color: #991b1b;
-      border: 1px solid #fecaca;
-      border-radius: 9px;
-      background: #fef2f2;
+      border-radius: 8px;
+      background: #fee2e2;
     }
 
-    .settings-footer {
+    .dialog-footer {
       display: flex;
       justify-content: flex-end;
       flex-wrap: wrap;
@@ -583,21 +436,17 @@
       background: #f8fafc;
     }
 
-    /* Thông báo nhỏ */
-
     .toast {
       position: fixed;
       right: 18px;
       bottom: 18px;
-      z-index: 100000;
-      max-width: min(390px, calc(100vw - 36px));
+      z-index: 10000;
+      max-width: 380px;
       padding: 14px 17px;
       color: white;
-      line-height: 1.5;
-      border-radius: 12px;
+      border-radius: 10px;
       background: #0f172a;
-      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.28);
-      animation: toastIn 0.18s ease;
+      box-shadow: 0 12px 35px rgba(0,0,0,0.25);
     }
 
     .toast-success {
@@ -608,25 +457,13 @@
       background: #991b1b;
     }
 
-    @keyframes toastIn {
-      from {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    @media (max-width: 960px) {
+    @media (max-width: 950px) {
       .layout {
         grid-template-columns: 1fr;
       }
     }
 
-    @media (max-width: 700px) {
+    @media (max-width: 650px) {
       .app {
         padding: 10px;
       }
@@ -634,13 +471,6 @@
       .header {
         align-items: flex-start;
         flex-direction: column;
-        padding: 18px;
-      }
-
-      .school-logo {
-        width: 78px;
-        height: 78px;
-        flex-basis: 78px;
       }
 
       .settings-button {
@@ -648,21 +478,7 @@
       }
 
       .statistics {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    @media (max-width: 480px) {
-      .statistics {
         grid-template-columns: 1fr;
-      }
-
-      .settings-footer {
-        flex-direction: column-reverse;
-      }
-
-      .settings-footer .button {
-        width: 100%;
       }
     }
   </style>
@@ -672,11 +488,7 @@
   <div class="app">
 
     <header class="header">
-      <img
-        id="schoolLogo"
-        class="school-logo"
-        alt="Logo trường"
-      >
+      <img id="schoolLogo" class="logo" alt="Logo trường">
 
       <div class="header-content">
         <h1 id="mainTitle">
@@ -688,45 +500,35 @@
         </p>
       </div>
 
-      <button
-        id="openSettingsButton"
-        class="settings-button"
-        type="button"
-      >
+      <button id="openSettings" class="settings-button" type="button">
         ⚙ Cài đặt giao diện
       </button>
     </header>
 
-    <div class="information-bar">
-      <div class="information-label">
-        📅 Ngày:
-        <span id="currentDate"></span>
+    <div class="info-bar">
+      <div class="info-item">
+        📅 Ngày: <span id="currentDate"></span>
       </div>
 
-      <div class="information-label">
-        ● Trạng thái:
-        <span id="systemState" class="system-state">
-          Đang khởi tạo
-        </span>
+      <div class="info-item">
+        Trạng thái: <span id="systemState">Đang khởi tạo</span>
       </div>
     </div>
 
     <main class="layout">
 
       <section class="card">
-        <h2 class="card-title">
-          📷 Quét mã QR
-        </h2>
+        <h2>📷 Quét mã QR</h2>
 
         <div id="reader"></div>
 
-        <div id="scanResult" class="result-box">
+        <div id="scanResult" class="result">
           Đang khởi tạo camera...
         </div>
 
-        <div class="button-group">
+        <div class="buttons">
           <button
-            id="refreshReportButton"
+            id="refreshReport"
             class="button button-primary"
             type="button"
           >
@@ -734,7 +536,7 @@
           </button>
 
           <button
-            id="loadAbsentButton"
+            id="loadAbsent"
             class="button button-secondary"
             type="button"
           >
@@ -744,60 +546,44 @@
       </section>
 
       <section class="card">
-        <h2 class="card-title">
-          📊 Báo cáo trong ngày
-        </h2>
+        <h2>📊 Báo cáo trong ngày</h2>
 
         <div class="statistics">
-
-          <div class="statistic statistic-total">
+          <div class="stat stat-total">
             <h3>Tổng số học sinh</h3>
-            <div id="totalStudents" class="statistic-number">
-              0
-            </div>
+            <div id="totalStudents" class="number">0</div>
           </div>
 
-          <div class="statistic statistic-present">
+          <div class="stat stat-present">
             <h3>Đã điểm danh</h3>
-            <div id="presentStudents" class="statistic-number">
-              0
-            </div>
+            <div id="presentStudents" class="number">0</div>
           </div>
 
-          <div class="statistic statistic-absent">
+          <div class="stat stat-absent">
             <h3>Chưa điểm danh</h3>
-            <div id="absentStudents" class="statistic-number">
-              0
-            </div>
+            <div id="absentStudents" class="number">0</div>
           </div>
 
-          <div class="statistic statistic-rate">
+          <div class="stat stat-rate">
             <h3>Tỷ lệ hoàn thành</h3>
-            <div id="attendanceRate" class="statistic-number">
-              0%
-            </div>
+            <div id="attendanceRate" class="number">0%</div>
           </div>
-
         </div>
 
-        <div class="subheading">
+        <div class="section-title">
           Học sinh vừa điểm danh
         </div>
 
         <div id="recentList" class="student-list">
-          <div class="empty-message">
-            Chưa có dữ liệu
-          </div>
+          <div class="empty">Chưa có dữ liệu</div>
         </div>
 
-        <div class="subheading">
+        <div class="section-title">
           Học sinh chưa điểm danh
         </div>
 
         <div id="absentList" class="student-list">
-          <div class="empty-message">
-            Nhấn nút để tải danh sách
-          </div>
+          <div class="empty">Nhấn nút để tải danh sách</div>
         </div>
       </section>
 
@@ -805,39 +591,23 @@
   </div>
 
   <!-- HỘP CÀI ĐẶT -->
+  <div id="settingsOverlay" class="overlay" hidden>
+    <div class="dialog">
 
-  <div
-    id="settingsOverlay"
-    class="modal-overlay"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="settingsTitle"
-    hidden
-  >
-    <div class="settings-dialog">
-
-      <div class="settings-header">
-        <h2 id="settingsTitle">
-          ⚙ Cài đặt giao diện
-        </h2>
+      <div class="dialog-header">
+        <h2>⚙ Cài đặt giao diện</h2>
 
         <button
-          id="closeSettingsXButton"
-          class="close-button"
+          id="closeSettingsX"
+          class="close-x"
           type="button"
-          aria-label="Đóng"
         >
           ×
         </button>
       </div>
 
-      <div class="settings-body">
-
-        <div
-          id="settingsError"
-          class="settings-error"
-          hidden
-        ></div>
+      <div class="dialog-body">
+        <div id="settingsError" class="settings-error" hidden></div>
 
         <div class="form-group">
           <label for="titleInput">
@@ -888,24 +658,7 @@
             accept="image/png,image/jpeg,image/webp"
           >
 
-          <div class="file-actions">
-            <button
-              id="removeLogoButton"
-              class="button button-danger"
-              type="button"
-            >
-              Xóa logo đã lưu
-            </button>
-          </div>
-
-          <div class="file-note">
-            Logo sẽ được tự động thu nhỏ tối đa 512 x 512 pixel.
-          </div>
-
-          <div
-            id="logoSelectionState"
-            class="selection-state"
-          ></div>
+          <div id="logoState" class="file-state"></div>
         </div>
 
         <div class="form-group">
@@ -919,37 +672,18 @@
             accept="image/png,image/jpeg,image/webp"
           >
 
-          <div class="file-actions">
-            <button
-              id="removeBackgroundButton"
-              class="button button-danger"
-              type="button"
-            >
-              Xóa hình nền đã lưu
-            </button>
-          </div>
-
-          <div class="file-note">
-            Hình nền được tự động thu nhỏ và nén để tránh lỗi dung lượng.
-          </div>
-
-          <div
-            id="backgroundSelectionState"
-            class="selection-state"
-          ></div>
+          <div id="backgroundState" class="file-state"></div>
         </div>
 
-        <div class="settings-note">
-          Tiêu đề và màu sắc được lưu riêng. Logo và hình nền được lưu bằng
-          IndexedDB, không lưu ảnh dung lượng lớn trực tiếp vào localStorage.
-          Cài đặt được giữ trên trình duyệt và máy tính đang sử dụng.
+        <div class="dialog-note">
+          Logo và hình nền được nén trước khi lưu trong trình duyệt.
+          Cài đặt chỉ áp dụng trên máy tính và trình duyệt đang sử dụng.
         </div>
-
       </div>
 
-      <div class="settings-footer">
+      <div class="dialog-footer">
         <button
-          id="restoreDefaultsButton"
+          id="restoreSettings"
           class="button button-danger"
           type="button"
         >
@@ -957,7 +691,7 @@
         </button>
 
         <button
-          id="closeSettingsButton"
+          id="closeSettings"
           class="button button-secondary"
           type="button"
         >
@@ -965,1224 +699,220 @@
         </button>
 
         <button
-          id="saveSettingsButton"
+          id="saveSettings"
           class="button button-primary"
           type="button"
         >
           Lưu cài đặt
         </button>
       </div>
-
     </div>
   </div>
 
-  <div
-    id="toast"
-    class="toast"
-    role="status"
-    aria-live="polite"
-    hidden
-  ></div>
+  <div id="toast" class="toast" hidden></div>
 
   <script>
     "use strict";
 
     /*
-      =====================================================
-      1. CẤU HÌNH QUAN TRỌNG
-      =====================================================
-
-      Thay nội dung bên dưới bằng đường dẫn Apps Script thật.
-      Đường dẫn phải kết thúc bằng /exec.
-    */
-
+     * DÁN LINK APPS SCRIPT THẬT VÀO ĐÂY
+     */
     const URL_APPS_SCRIPT =
-      "https://script.google.com/macros/s/AKfycbyMc1rCy39RKz9RYKSBqpTdyuzQdx-S0q9TAWddFvThg-tHZcohOch28pFqrbhbDUcD2g/exec";
+      "https://script.google.com/macros/s/AKfycbyYIQDklGIuxaUSPGk0sG5C81akRWqYpCKOyzSgU0w0fJj90gmi8ATA6IU6psNK2ybiFA/exec";
 
-    /*
-      =====================================================
-      2. HẰNG SỐ VÀ TRẠNG THÁI
-      =====================================================
-    */
+    const SETTINGS_KEY =
+      "hoaNinhQrSettingsV4";
 
-    const SETTINGS_KEY = "hoaNinhQrSettingsV3";
-
-    const DB_NAME = "HoaNinhQrInterface";
-    const DB_VERSION = 1;
-    const IMAGE_STORE = "images";
-
-    const IMAGE_KEY_LOGO = "schoolLogo";
-    const IMAGE_KEY_BACKGROUND = "pageBackground";
-
-    const DEFAULT_SETTINGS = Object.freeze({
+    const DEFAULT_SETTINGS = {
       title: "HỆ THỐNG ĐIỂM DANH QR",
 
       description:
         "Trường Tiểu học Hòa Ninh - Quản lý điểm danh nhanh chóng và chính xác",
 
-      primaryColor: "#087f5b"
-    });
+      color: "#087f5b"
+    };
 
-    const DEFAULT_LOGO_SVG = `
-      <svg xmlns="http://www.w3.org/2000/svg"
-           viewBox="0 0 200 200">
-        <circle cx="100" cy="100" r="96"
-                fill="#ffffff"
-                stroke="#087f5b"
-                stroke-width="8"/>
-        <circle cx="100" cy="100" r="78"
-                fill="#e8fff7"/>
-        <path d="M48 117 L100 88 L152 117 L100 146 Z"
-              fill="#087f5b"/>
-        <path d="M100 88 L100 146"
-              stroke="#ffffff"
-              stroke-width="5"/>
-        <path d="M72 67 L100 43 L128 67 L100 85 Z"
-              fill="#f59e0b"/>
-        <text x="100"
-              y="172"
-              text-anchor="middle"
-              font-family="Arial"
-              font-size="20"
-              font-weight="bold"
-              fill="#087f5b">HN</text>
-      </svg>
-    `;
+    const DB_NAME =
+      "hoaNinhQrDatabaseV4";
 
-    const DEFAULT_LOGO_URL =
-      "data:image/svg+xml;charset=UTF-8," +
-      encodeURIComponent(DEFAULT_LOGO_SVG);
+    const DB_VERSION = 1;
 
-    let elements = {};
-    let scanner = null;
-    let scanningLocked = false;
-    let lastScannedCode = "";
-    let toastTimer = null;
+    const IMAGE_STORE =
+      "images";
 
-    let removeLogoRequested = false;
-    let removeBackgroundRequested = false;
+    const state = {
+      scanner: null,
+      locked: false,
+      lastCode: "",
+      timer: null,
+      logoUrl: "",
+      backgroundUrl: ""
+    };
 
-    let currentLogoObjectUrl = "";
-    let currentBackgroundObjectUrl = "";
+    const dom = {};
 
-    /*
-      =====================================================
-      3. LẤY PHẦN TỬ GIAO DIỆN
-      =====================================================
-    */
+    function cacheDom() {
+      const ids = [
+        "schoolLogo",
+        "mainTitle",
+        "mainDescription",
+        "currentDate",
+        "systemState",
+        "scanResult",
+        "totalStudents",
+        "presentStudents",
+        "absentStudents",
+        "attendanceRate",
+        "recentList",
+        "absentList",
+        "openSettings",
+        "closeSettingsX",
+        "closeSettings",
+        "saveSettings",
+        "restoreSettings",
+        "settingsOverlay",
+        "settingsError",
+        "titleInput",
+        "descriptionInput",
+        "primaryColorInput",
+        "logoInput",
+        "backgroundInput",
+        "logoState",
+        "backgroundState",
+        "refreshReport",
+        "loadAbsent",
+        "toast"
+      ];
 
-    function cacheElements() {
-      elements = {
-        schoolLogo:
-          document.getElementById("schoolLogo"),
-
-        mainTitle:
-          document.getElementById("mainTitle"),
-
-        mainDescription:
-          document.getElementById("mainDescription"),
-
-        currentDate:
-          document.getElementById("currentDate"),
-
-        systemState:
-          document.getElementById("systemState"),
-
-        scanResult:
-          document.getElementById("scanResult"),
-
-        totalStudents:
-          document.getElementById("totalStudents"),
-
-        presentStudents:
-          document.getElementById("presentStudents"),
-
-        absentStudents:
-          document.getElementById("absentStudents"),
-
-        attendanceRate:
-          document.getElementById("attendanceRate"),
-
-        recentList:
-          document.getElementById("recentList"),
-
-        absentList:
-          document.getElementById("absentList"),
-
-        openSettingsButton:
-          document.getElementById("openSettingsButton"),
-
-        settingsOverlay:
-          document.getElementById("settingsOverlay"),
-
-        closeSettingsXButton:
-          document.getElementById("closeSettingsXButton"),
-
-        closeSettingsButton:
-          document.getElementById("closeSettingsButton"),
-
-        saveSettingsButton:
-          document.getElementById("saveSettingsButton"),
-
-        restoreDefaultsButton:
-          document.getElementById("restoreDefaultsButton"),
-
-        titleInput:
-          document.getElementById("titleInput"),
-
-        descriptionInput:
-          document.getElementById("descriptionInput"),
-
-        primaryColorInput:
-          document.getElementById("primaryColorInput"),
-
-        logoInput:
-          document.getElementById("logoInput"),
-
-        backgroundInput:
-          document.getElementById("backgroundInput"),
-
-        removeLogoButton:
-          document.getElementById("removeLogoButton"),
-
-        removeBackgroundButton:
-          document.getElementById("removeBackgroundButton"),
-
-        logoSelectionState:
-          document.getElementById("logoSelectionState"),
-
-        backgroundSelectionState:
-          document.getElementById("backgroundSelectionState"),
-
-        settingsError:
-          document.getElementById("settingsError"),
-
-        refreshReportButton:
-          document.getElementById("refreshReportButton"),
-
-        loadAbsentButton:
-          document.getElementById("loadAbsentButton"),
-
-        toast:
-          document.getElementById("toast")
-      };
+      ids.forEach(function(id) {
+        dom[id] =
+          document.getElementById(id);
+      });
     }
 
-    /*
-      =====================================================
-      4. LOCALSTORAGE CHỈ LƯU CHỮ VÀ MÀU
-      =====================================================
-    */
+    function showToast(message, type) {
+      dom.toast.textContent = message;
+      dom.toast.hidden = false;
+      dom.toast.className =
+        "toast " +
+        (type === "success"
+          ? "toast-success"
+          : type === "error"
+            ? "toast-error"
+            : "");
 
-    function loadTextSettings() {
-      try {
-        const savedText =
-          localStorage.getItem(SETTINGS_KEY);
+      window.clearTimeout(
+        showToast.timer
+      );
 
-        if (!savedText) {
-          return { ...DEFAULT_SETTINGS };
-        }
+      showToast.timer =
+        window.setTimeout(function() {
+          dom.toast.hidden = true;
+        }, 3500);
+    }
 
-        const parsed = JSON.parse(savedText);
+    function showSettingsError(message) {
+      dom.settingsError.textContent =
+        message;
+      dom.settingsError.hidden = false;
+    }
 
-        return {
-          title:
-            typeof parsed.title === "string" &&
-            parsed.title.trim()
-              ? parsed.title.trim()
-              : DEFAULT_SETTINGS.title,
+    function clearSettingsError() {
+      dom.settingsError.textContent = "";
+      dom.settingsError.hidden = true;
+    }
 
-          description:
-            typeof parsed.description === "string" &&
-            parsed.description.trim()
-              ? parsed.description.trim()
-              : DEFAULT_SETTINGS.description,
+    function showResult(message, type) {
+      dom.scanResult.textContent = message;
+      dom.scanResult.className = "result";
 
-          primaryColor:
-            isValidHexColor(parsed.primaryColor)
-              ? parsed.primaryColor
-              : DEFAULT_SETTINGS.primaryColor
-        };
+      if (type === "success") {
+        dom.scanResult.classList.add("success");
+      }
 
-      } catch (error) {
-        console.error(
-          "Không đọc được cài đặt chữ:",
-          error
-        );
+      if (type === "error") {
+        dom.scanResult.classList.add("error");
+      }
 
-        return { ...DEFAULT_SETTINGS };
+      if (type === "warning") {
+        dom.scanResult.classList.add("warning");
       }
     }
 
-    function saveTextSettings(settings) {
-      const data = {
-        title: settings.title,
-        description: settings.description,
-        primaryColor: settings.primaryColor
-      };
+    function setState(message) {
+      dom.systemState.textContent = message;
+    }
 
-      localStorage.setItem(
-        SETTINGS_KEY,
-        JSON.stringify(data)
+    function validAppsScriptUrl() {
+      const url =
+        String(URL_APPS_SCRIPT || "").trim();
+
+      return (
+        /^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/
+          .test(url) &&
+        !url.includes("DÁN_LINK")
       );
     }
 
-    function isValidHexColor(value) {
-      return /^#[0-9a-fA-F]{6}$/.test(
-        String(value || "")
-      );
-    }
-
-    /*
-      =====================================================
-      5. INDEXEDDB LƯU LOGO VÀ HÌNH NỀN
-      =====================================================
-    */
-
-    function openImageDatabase() {
+    function jsonp(action, params) {
       return new Promise(function(resolve, reject) {
-        if (!("indexedDB" in window)) {
+        if (!validAppsScriptUrl()) {
           reject(
             new Error(
-              "Trình duyệt không hỗ trợ IndexedDB."
+              "Chưa thay đường dẫn Apps Script."
             )
           );
           return;
         }
 
-        const request =
-          indexedDB.open(DB_NAME, DB_VERSION);
+        const callback =
+          "callback_" +
+          Date.now() +
+          "_" +
+          Math.floor(Math.random() * 100000);
 
-        request.onupgradeneeded = function(event) {
-          const database = event.target.result;
+        const script =
+          document.createElement("script");
 
-          if (
-            !database.objectStoreNames.contains(
-              IMAGE_STORE
-            )
-          ) {
-            database.createObjectStore(IMAGE_STORE);
-          }
-        };
-
-        request.onsuccess = function() {
-          resolve(request.result);
-        };
-
-        request.noscript = function() {
-          reject(
-            request.error ||
-            new Error("Không mở được kho lưu ảnh.")
-          );
-        };
-
-        request.onblocked = function() {
-          reject(
-            new Error(
-              "Kho ảnh đang bị khóa bởi một tab khác."
-            )
-          );
-        };
-      });
-    }
-
-    async function putImage(key, blob) {
-      const database = await openImageDatabase();
-
-      return new Promise(function(resolve, reject) {
-        const transaction =
-          database.transaction(
-            IMAGE_STORE,
-            "readwrite"
-          );
-
-        const store =
-          transaction.objectStore(IMAGE_STORE);
-
-        store.put(blob, key);
-
-        transaction.oncomplete = function() {
-          database.close();
-          resolve();
-        };
-
-        transaction.noscript = function() {
-          const error =
-            transaction.error ||
-            new Error("Không lưu được ảnh.");
-
-          database.close();
-          reject(error);
-        };
-
-        transaction.noscript = function() {
-          const error =
-            transaction.error ||
-            new Error("Thao tác lưu ảnh bị hủy.");
-
-          database.close();
-          reject(error);
-        };
-      });
-    }
-
-    async function getImage(key) {
-      const database = await openImageDatabase();
-
-      return new Promise(function(resolve, reject) {
-        const transaction =
-          database.transaction(
-            IMAGE_STORE,
-            "readonly"
-          );
-
-        const store =
-          transaction.objectStore(IMAGE_STORE);
-
-        const request = store.get(key);
-
-        request.onsuccess = function() {
-          database.close();
-          resolve(request.result || null);
-        };
-
-        request.noscript = function() {
-          const error =
-            request.error ||
-            new Error("Không đọc được ảnh.");
-
-          database.close();
-          reject(error);
-        };
-      });
-    }
-
-    async function deleteImage(key) {
-      const database = await openImageDatabase();
-
-      return new Promise(function(resolve, reject) {
-        const transaction =
-          database.transaction(
-            IMAGE_STORE,
-            "readwrite"
-          );
-
-        const store =
-          transaction.objectStore(IMAGE_STORE);
-
-        store.delete(key);
-
-        transaction.oncomplete = function() {
-          database.close();
-          resolve();
-        };
-
-        transaction.noscript = function() {
-          const error =
-            transaction.error ||
-            new Error("Không xóa được ảnh.");
-
-          database.close();
-          reject(error);
-        };
-      });
-    }
-
-    /*
-      =====================================================
-      6. THU NHỎ VÀ NÉN ẢNH
-      =====================================================
-    */
-
-    function validateImageFile(file) {
-      if (!file) {
-        return;
-      }
-
-      const acceptedTypes = [
-        "image/png",
-        "image/jpeg",
-        "image/webp"
-      ];
-
-      if (!acceptedTypes.includes(file.type)) {
-        throw new Error(
-          "Chỉ chấp nhận ảnh PNG, JPG, JPEG hoặc WEBP."
-        );
-      }
-
-      const maximumOriginalSize =
-        20 * 1024 * 1024;
-
-      if (file.size > maximumOriginalSize) {
-        throw new Error(
-          "Ảnh gốc quá lớn. Dung lượng tối đa là 20 MB."
-        );
-      }
-    }
-
-    function loadImageFromFile(file) {
-      return new Promise(function(resolve, reject) {
-        const temporaryUrl =
-          URL.createObjectURL(file);
-
-        const image = new Image();
-
-        image.noscript = function() {
-          URL.revokeObjectURL(temporaryUrl);
-          resolve(image);
-        };
-
-        image.noscript = function() {
-          URL.revokeObjectURL(temporaryUrl);
-
-          reject(
-            new Error(
-              "Không đọc được nội dung file ảnh."
-            )
-          );
-        };
-
-        image.src = temporaryUrl;
-      });
-    }
-
-    async function compressImage(
-      file,
-      maximumWidth,
-      maximumHeight,
-      outputType,
-      quality
-    ) {
-      validateImageFile(file);
-
-      const image =
-        await loadImageFromFile(file);
-
-      const originalWidth =
-        image.naturalWidth || image.width;
-
-      const originalHeight =
-        image.naturalHeight || image.height;
-
-      if (!originalWidth || !originalHeight) {
-        throw new Error(
-          "Không xác định được kích thước ảnh."
-        );
-      }
-
-      const scale = Math.min(
-        1,
-        maximumWidth / originalWidth,
-        maximumHeight / originalHeight
-      );
-
-      const targetWidth = Math.max(
-        1,
-        Math.round(originalWidth * scale)
-      );
-
-      const targetHeight = Math.max(
-        1,
-        Math.round(originalHeight * scale)
-      );
-
-      const canvas =
-        document.createElement("canvas");
-
-      canvas.width = targetWidth;
-      canvas.height = targetHeight;
-
-      const context =
-        canvas.getContext("2d", {
-          alpha: outputType === "image/png"
+        const query = new URLSearchParams({
+          ...(params || {}),
+          action: action,
+          callback: callback,
+          time: Date.now()
         });
 
-      if (!context) {
-        throw new Error(
-          "Trình duyệt không tạo được vùng xử lý ảnh."
-        );
-      }
+        let finished = false;
 
-      if (outputType === "image/jpeg") {
-        context.fillStyle = "#ffffff";
-        context.fillRect(
-          0,
-          0,
-          targetWidth,
-          targetHeight
-        );
-      }
+        const timeout =
+          window.setTimeout(function() {
+            finish();
 
-      context.imageSmoothingEnabled = true;
-      context.imageSmoothingQuality = "high";
-
-      context.drawImage(
-        image,
-        0,
-        0,
-        targetWidth,
-        targetHeight
-      );
-
-      const blob = await new Promise(
-        function(resolve, reject) {
-          canvas.toBlob(
-            function(result) {
-              if (result) {
-                resolve(result);
-              } else {
-                reject(
-                  new Error(
-                    "Không thể nén ảnh đã chọn."
-                  )
-                );
-              }
-            },
-            outputType,
-            quality
-          );
-        }
-      );
-
-      const maximumCompressedSize =
-        4 * 1024 * 1024;
-
-      if (blob.size > maximumCompressedSize) {
-        throw new Error(
-          "Ảnh sau khi xử lý vẫn quá lớn. Hãy chọn ảnh khác."
-        );
-      }
-
-      return blob;
-    }
-
-    /*
-      =====================================================
-      7. ÁP DỤNG GIAO DIỆN
-      =====================================================
-    */
-
-    function revokeCurrentObjectUrls() {
-      if (currentLogoObjectUrl) {
-        URL.revokeObjectURL(
-          currentLogoObjectUrl
-        );
-
-        currentLogoObjectUrl = "";
-      }
-
-      if (currentBackgroundObjectUrl) {
-        URL.revokeObjectURL(
-          currentBackgroundObjectUrl
-        );
-
-        currentBackgroundObjectUrl = "";
-      }
-    }
-
-    async function applyInterfaceSettings() {
-      const settings = loadTextSettings();
-
-      elements.mainTitle.textContent =
-        settings.title;
-
-      elements.mainDescription.textContent =
-        settings.description;
-
-      document.documentElement.style.setProperty(
-        "--primary",
-        settings.primaryColor
-      );
-
-      document.documentElement.style.setProperty(
-        "--primary-dark",
-        darkenHexColor(
-          settings.primaryColor,
-          24
-        )
-      );
-
-      revokeCurrentObjectUrls();
-
-      elements.schoolLogo.src =
-        DEFAULT_LOGO_URL;
-
-      resetDefaultBackground();
-
-      try {
-        const logoBlob =
-          await getImage(IMAGE_KEY_LOGO);
-
-        if (logoBlob instanceof Blob) {
-          currentLogoObjectUrl =
-            URL.createObjectURL(logoBlob);
-
-          elements.schoolLogo.src =
-            currentLogoObjectUrl;
-        }
-
-      } catch (error) {
-        console.warn(
-          "Không tải được logo:",
-          error
-        );
-      }
-
-      try {
-        const backgroundBlob =
-          await getImage(
-            IMAGE_KEY_BACKGROUND
-          );
-
-        if (backgroundBlob instanceof Blob) {
-          currentBackgroundObjectUrl =
-            URL.createObjectURL(
-              backgroundBlob
-            );
-
-          document.body.style.backgroundImage =
-            "linear-gradient(" +
-            "rgba(0,45,35,0.52)," +
-            "rgba(0,45,35,0.52)" +
-            "), url('" +
-            currentBackgroundObjectUrl +
-            "')";
-        }
-
-      } catch (error) {
-        console.warn(
-          "Không tải được hình nền:",
-          error
-        );
-      }
-    }
-
-    function resetDefaultBackground() {
-      document.body.style.backgroundImage =
-        "radial-gradient(" +
-          "circle at 20% 20%," +
-          "rgba(255,255,255,0.14)," +
-          "transparent 32%" +
-        ")," +
-        "radial-gradient(" +
-          "circle at 80% 10%," +
-          "rgba(59,130,246,0.22)," +
-          "transparent 30%" +
-        ")," +
-        "linear-gradient(" +
-          "135deg," +
-          "#064e3b," +
-          "#087f5b 48%," +
-          "#0f766e" +
-        ")";
-    }
-
-    function darkenHexColor(hex, amount) {
-      const cleanHex =
-        String(hex).replace("#", "");
-
-      if (!/^[0-9a-fA-F]{6}$/.test(cleanHex)) {
-        return "#065f46";
-      }
-
-      const number =
-        parseInt(cleanHex, 16);
-
-      const red = Math.max(
-        0,
-        (number >> 16) - amount
-      );
-
-      const green = Math.max(
-        0,
-        ((number >> 8) & 0x00ff) - amount
-      );
-
-      const blue = Math.max(
-        0,
-        (number & 0x0000ff) - amount
-      );
-
-      return (
-        "#" +
-        [red, green, blue]
-          .map(function(value) {
-            return value
-              .toString(16)
-              .padStart(2, "0");
-          })
-          .join("")
-      );
-    }
-
-    /*
-      =====================================================
-      8. MỞ, ĐÓNG VÀ LƯU CÀI ĐẶT
-      =====================================================
-    */
-
-    function openSettings() {
-      const settings = loadTextSettings();
-
-      elements.titleInput.value =
-        settings.title;
-
-      elements.descriptionInput.value =
-        settings.description;
-
-      elements.primaryColorInput.value =
-        settings.primaryColor;
-
-      elements.logoInput.value = "";
-      elements.backgroundInput.value = "";
-
-      elements.logoSelectionState.textContent = "";
-      elements.backgroundSelectionState.textContent = "";
-
-      removeLogoRequested = false;
-      removeBackgroundRequested = false;
-
-      hideSettingsError();
-
-      elements.settingsOverlay.hidden = false;
-
-      document.body.classList.add(
-        "modal-open"
-      );
-
-      window.setTimeout(function() {
-        elements.titleInput.focus();
-      }, 50);
-    }
-
-    function closeSettings() {
-      if (elements.saveSettingsButton.disabled) {
-        return;
-      }
-
-      elements.settingsOverlay.hidden = true;
-
-      document.body.classList.remove(
-        "modal-open"
-      );
-
-      hideSettingsError();
-    }
-
-    function showSettingsError(message) {
-      elements.settingsError.textContent =
-        message;
-
-      elements.settingsError.hidden = false;
-    }
-
-    function hideSettingsError() {
-      elements.settingsError.textContent = "";
-      elements.settingsError.hidden = true;
-    }
-
-    function markLogoForRemoval() {
-      removeLogoRequested = true;
-      elements.logoInput.value = "";
-
-      elements.logoSelectionState.textContent =
-        "Logo hiện tại sẽ bị xóa khi bấm Lưu cài đặt.";
-    }
-
-    function markBackgroundForRemoval() {
-      removeBackgroundRequested = true;
-      elements.backgroundInput.value = "";
-
-      elements.backgroundSelectionState.textContent =
-        "Hình nền hiện tại sẽ bị xóa khi bấm Lưu cài đặt.";
-    }
-
-    async function saveSettings() {
-      if (elements.saveSettingsButton.disabled) {
-        return;
-      }
-
-      hideSettingsError();
-
-      const title =
-        elements.titleInput.value.trim();
-
-      const description =
-        elements.descriptionInput.value.trim();
-
-      const primaryColor =
-        elements.primaryColorInput.value;
-
-      if (!title) {
-        showSettingsError(
-          "Tiêu đề hệ thống không được để trống."
-        );
-
-        elements.titleInput.focus();
-        return;
-      }
-
-      if (title.length > 100) {
-        showSettingsError(
-          "Tiêu đề không được dài quá 100 ký tự."
-        );
-
-        elements.titleInput.focus();
-        return;
-      }
-
-      if (!description) {
-        showSettingsError(
-          "Nội dung mô tả không được để trống."
-        );
-
-        elements.descriptionInput.focus();
-        return;
-      }
-
-      if (!isValidHexColor(primaryColor)) {
-        showSettingsError(
-          "Màu chủ đạo không hợp lệ."
-        );
-
-        return;
-      }
-
-      const selectedLogo =
-        elements.logoInput.files[0] || null;
-
-      const selectedBackground =
-        elements.backgroundInput.files[0] || null;
-
-      const originalButtonText =
-        elements.saveSettingsButton.textContent;
-
-      elements.saveSettingsButton.disabled = true;
-
-      elements.saveSettingsButton.textContent =
-        "Đang lưu...";
-
-      try {
-        /*
-          Lưu chữ trước. Nếu localStorage bị chặn,
-          lỗi sẽ được bắt và hiển thị rõ.
-        */
-
-        saveTextSettings({
-          title: title,
-          description: description,
-          primaryColor: primaryColor
-        });
-
-        /*
-          Xử lý logo.
-        */
-
-        if (removeLogoRequested) {
-          await deleteImage(IMAGE_KEY_LOGO);
-        }
-
-        if (selectedLogo) {
-          const logoBlob =
-            await compressImage(
-              selectedLogo,
-              512,
-              512,
-              "image/png",
-              0.92
-            );
-
-          await putImage(
-            IMAGE_KEY_LOGO,
-            logoBlob
-          );
-        }
-
-        /*
-          Xử lý ảnh nền.
-        */
-
-        if (removeBackgroundRequested) {
-          await deleteImage(
-            IMAGE_KEY_BACKGROUND
-          );
-        }
-
-        if (selectedBackground) {
-          const backgroundBlob =
-            await compressImage(
-              selectedBackground,
-              1920,
-              1080,
-              "image/jpeg",
-              0.82
-            );
-
-          await putImage(
-            IMAGE_KEY_BACKGROUND,
-            backgroundBlob
-          );
-        }
-
-        await applyInterfaceSettings();
-
-        elements.settingsOverlay.hidden = true;
-
-        document.body.classList.remove(
-          "modal-open"
-        );
-
-        showToast(
-          "Đã lưu cài đặt giao diện thành công.",
-          "success"
-        );
-
-      } catch (error) {
-        console.error(
-          "Lỗi lưu cài đặt:",
-          error
-        );
-
-        let message =
-          error && error.message
-            ? error.message
-            : "Không thể lưu cài đặt.";
-
-        if (
-          error &&
-          (
-            error.name === "QuotaExceededError" ||
-            error.name === "NS_ERROR_DOM_QUOTA_REACHED"
-          )
-        ) {
-          message =
-            "Bộ nhớ trình duyệt đã đầy. Hãy xóa dữ liệu trang web hoặc chọn ảnh nhỏ hơn.";
-        }
-
-        if (
-          error &&
-          error.name === "SecurityError"
-        ) {
-          message =
-            "Trình duyệt đang chặn việc lưu dữ liệu. Hãy cho phép trang web lưu dữ liệu.";
-        }
-
-        showSettingsError(message);
-
-      } finally {
-        elements.saveSettingsButton.disabled = false;
-
-        elements.saveSettingsButton.textContent =
-          originalButtonText;
-      }
-    }
-
-    async function restoreDefaultSettings() {
-      const confirmed = window.confirm(
-        "Thầy có chắc muốn khôi phục toàn bộ giao diện mặc định không?"
-      );
-
-      if (!confirmed) {
-        return;
-      }
-
-      elements.restoreDefaultsButton.disabled = true;
-
-      try {
-        localStorage.removeItem(SETTINGS_KEY);
-
-        /*
-          Xóa khóa cũ của những phiên bản trước,
-          tránh ảnh Base64 cũ chiếm dung lượng.
-        */
-
-        localStorage.removeItem(
-          "caiDatGiaoDienQR"
-        );
-
-        await Promise.allSettled([
-          deleteImage(IMAGE_KEY_LOGO),
-          deleteImage(IMAGE_KEY_BACKGROUND)
-        ]);
-
-        await applyInterfaceSettings();
-
-        elements.titleInput.value =
-          DEFAULT_SETTINGS.title;
-
-        elements.descriptionInput.value =
-          DEFAULT_SETTINGS.description;
-
-        elements.primaryColorInput.value =
-          DEFAULT_SETTINGS.primaryColor;
-
-        elements.logoInput.value = "";
-        elements.backgroundInput.value = "";
-
-        removeLogoRequested = false;
-        removeBackgroundRequested = false;
-
-        elements.logoSelectionState.textContent = "";
-        elements.backgroundSelectionState.textContent = "";
-
-        elements.settingsOverlay.hidden = true;
-
-        document.body.classList.remove(
-          "modal-open"
-        );
-
-        showToast(
-          "Đã khôi phục giao diện mặc định.",
-          "success"
-        );
-
-      } catch (error) {
-        console.error(
-          "Lỗi khôi phục mặc định:",
-          error
-        );
-
-        showSettingsError(
-          "Không thể khôi phục giao diện mặc định."
-        );
-
-      } finally {
-        elements.restoreDefaultsButton.disabled = false;
-      }
-    }
-
-    /*
-      =====================================================
-      9. HIỂN THỊ THÔNG BÁO
-      =====================================================
-    */
-
-    function showToast(message, type) {
-      window.clearTimeout(toastTimer);
-
-      elements.toast.textContent = message;
-
-      elements.toast.className =
-        "toast " +
-        (
-          type === "success"
-            ? "toast-success"
-            : type === "error"
-              ? "toast-error"
-              : ""
-        );
-
-      elements.toast.hidden = false;
-
-      toastTimer = window.setTimeout(
-        function() {
-          elements.toast.hidden = true;
-        },
-        3500
-      );
-    }
-
-    function showScanResult(message, type) {
-      elements.scanResult.textContent = message;
-
-      elements.scanResult.className =
-        "result-box";
-
-      if (type === "success") {
-        elements.scanResult.classList.add(
-          "result-success"
-        );
-      }
-
-      if (type === "error") {
-        elements.scanResult.classList.add(
-          "result-error"
-        );
-      }
-
-      if (type === "warning") {
-        elements.scanResult.classList.add(
-          "result-warning"
-        );
-      }
-    }
-
-    function setSystemState(text) {
-      elements.systemState.textContent = text;
-    }
-
-    /*
-      =====================================================
-      10. KẾT NỐI APPS SCRIPT BẰNG JSONP
-      =====================================================
-    */
-
-    function isAppsScriptConfigured() {
-      const value =
-        String(URL_APPS_SCRIPT || "").trim();
-
-      return (
-        value.startsWith("https://") &&
-        value.includes(
-          "script.google.com/macros/s/"
-        ) &&
-        value.endsWith("/exec") &&
-        !value.includes("DÁN_LINK")
-      );
-    }
-
-    function jsonpRequest(action, parameters) {
-      return new Promise(
-        function(resolve, reject) {
-          if (!isAppsScriptConfigured()) {
             reject(
               new Error(
-                "Chưa thay đường dẫn Apps Script trong index.html."
+                "Máy chủ phản hồi quá chậm."
               )
             );
+          }, 15000);
+
+        function finish() {
+          if (finished) {
             return;
           }
 
-          const callbackName =
-            "qrCallback_" +
-            Date.now() +
-            "_" +
-            Math.floor(
-              Math.random() * 1000000
-            );
+          finished = true;
+          window.clearTimeout(timeout);
 
-          const script =
-            document.createElement("script");
+          try {
+            delete window[callback];
+          } catch (error) {
+            window[callback] = undefined;
+          }
 
-          const requestParameters = {
-            ...(parameters || {}),
-            action: action,
-            callback: callbackName,
-            t: Date.now()
-          };
+          script.remove();
+        }
 
-          const query =
-            new URLSearchParams(
-              requestParameters
-            ).toString();
-
-          let finished = false;
-
-          const timeout = window.setTimeout(
-            function() {
-              finish();
-
-              reject(
-                new Error(
-                  "Máy chủ phản hồi quá chậm. Vui lòng thử lại."
-                )
-              );
-            },
-            15000
-          );
-
-          window[callbackName] = function(data) {
+        window[callback] =
+          function(data) {
             if (finished) {
               return;
             }
@@ -2191,7 +921,8 @@
             resolve(data);
           };
 
-          script.noscript = function() {
+        script.noscript =
+          function() {
             if (finished) {
               return;
             }
@@ -2200,407 +931,1015 @@
 
             reject(
               new Error(
-                "Không kết nối được với Apps Script."
+                "Không kết nối được Apps Script."
               )
             );
           };
 
-          script.src =
-            URL_APPS_SCRIPT +
-            "?" +
-            query;
+        script.src =
+          URL_APPS_SCRIPT +
+          "?" +
+          query.toString();
 
-          script.async = true;
+        script.async = true;
+        document.body.appendChild(script);
+      });
+    }
 
-          function finish() {
-            if (finished) {
-              return;
-            }
+    function openSettings() {
+      const settings =
+        loadTextSettings();
 
-            finished = true;
+      dom.titleInput.value =
+        settings.title;
 
-            window.clearTimeout(timeout);
+      dom.descriptionInput.value =
+        settings.description;
 
-            try {
-              delete window[callbackName];
-            } catch (error) {
-              window[callbackName] = undefined;
-            }
+      dom.primaryColorInput.value =
+        settings.color;
 
-            if (script.parentNode) {
-              script.parentNode.removeChild(
-                script
-              );
-            }
-          }
+      dom.logoInput.value = "";
+      dom.backgroundInput.value = "";
+      dom.logoState.textContent = "";
+      dom.backgroundState.textContent = "";
 
-          document.body.appendChild(script);
-        }
+      clearSettingsError();
+
+      dom.settingsOverlay.hidden = false;
+      document.body.classList.add(
+        "modal-open"
+      );
+
+      dom.titleInput.focus();
+    }
+
+    function closeSettings() {
+      dom.settingsOverlay.hidden = true;
+      document.body.classList.remove(
+        "modal-open"
       );
     }
 
-    /*
-      =====================================================
-      11. QUÉT VÀ GỬI MÃ QR
-      =====================================================
-    */
+    function loadTextSettings() {
+      try {
+        const raw =
+          localStorage.getItem(
+            SETTINGS_KEY
+          );
 
-    async function processQrCode(rawCode) {
-      const qrCode =
+        if (!raw) {
+          return {
+            ...DEFAULT_SETTINGS
+          };
+        }
+
+        const data =
+          JSON.parse(raw);
+
+        return {
+          title:
+            typeof data.title === "string" &&
+            data.title.trim()
+              ? data.title.trim()
+              : DEFAULT_SETTINGS.title,
+
+          description:
+            typeof data.description === "string" &&
+            data.description.trim()
+              ? data.description.trim()
+              : DEFAULT_SETTINGS.description,
+
+          color:
+            /^#[0-9A-Fa-f]{6}$/.test(data.color)
+              ? data.color
+              : DEFAULT_SETTINGS.color
+        };
+
+      } catch (error) {
+        return {
+          ...DEFAULT_SETTINGS
+        };
+      }
+    }
+
+    function saveTextSettings(settings) {
+      localStorage.setItem(
+        SETTINGS_KEY,
+        JSON.stringify(settings)
+      );
+    }
+
+    function openDatabase() {
+      return new Promise(function(resolve, reject) {
+        const request =
+          indexedDB.open(
+            DB_NAME,
+            DB_VERSION
+          );
+
+        request.onupgradeneeded =
+          function(event) {
+            const database =
+              event.target.result;
+
+            if (
+              !database.objectStoreNames.contains(
+                IMAGE_STORE
+              )
+            ) {
+              database.createObjectStore(
+                IMAGE_STORE
+              );
+            }
+          };
+
+        request.onsuccess =
+          function() {
+            resolve(request.result);
+          };
+
+        request.noscript =
+          function() {
+            reject(
+              request.error ||
+              new Error(
+                "Không mở được bộ nhớ ảnh."
+              )
+            );
+          };
+      });
+    }
+
+    function saveImage(key, blob) {
+      return openDatabase().then(function(db) {
+        return new Promise(function(resolve, reject) {
+          const transaction =
+            db.transaction(
+              IMAGE_STORE,
+              "readwrite"
+            );
+
+          transaction.objectStore(
+            IMAGE_STORE
+          ).put(blob, key);
+
+          transaction.oncomplete =
+            function() {
+              db.close();
+              resolve();
+            };
+
+          transaction.noscript =
+            function() {
+              db.close();
+              reject(
+                transaction.error ||
+                new Error(
+                  "Không lưu được ảnh."
+                )
+              );
+            };
+        });
+      });
+    }
+
+    function readImage(key) {
+      return openDatabase().then(function(db) {
+        return new Promise(function(resolve, reject) {
+          const request =
+            db.transaction(
+              IMAGE_STORE,
+              "readonly"
+            ).objectStore(
+              IMAGE_STORE
+            ).get(key);
+
+          request.onsuccess =
+            function() {
+              db.close();
+              resolve(request.result || null);
+            };
+
+          request.noscript =
+            function() {
+              db.close();
+              reject(
+                request.error ||
+                new Error(
+                  "Không đọc được ảnh."
+                )
+              );
+            };
+        });
+      });
+    }
+
+    function deleteImage(key) {
+      return openDatabase().then(function(db) {
+        return new Promise(function(resolve, reject) {
+          const transaction =
+            db.transaction(
+              IMAGE_STORE,
+              "readwrite"
+            );
+
+          transaction.objectStore(
+            IMAGE_STORE
+          ).delete(key);
+
+          transaction.oncomplete =
+            function() {
+              db.close();
+              resolve();
+            };
+
+          transaction.noscript =
+            function() {
+              db.close();
+              reject(
+                transaction.error ||
+                new Error(
+                  "Không xóa được ảnh."
+                )
+              );
+            };
+        });
+      });
+    }
+
+    function readImageFile(file) {
+      return new Promise(function(resolve, reject) {
+        const url =
+          URL.createObjectURL(file);
+
+        const image =
+          new Image();
+
+        image.noscript =
+          function() {
+            URL.revokeObjectURL(url);
+            resolve(image);
+          };
+
+        image.noscript =
+          function() {
+            URL.revokeObjectURL(url);
+            reject(
+              new Error(
+                "Không đọc được ảnh."
+              )
+            );
+          };
+
+        image.src = url;
+      });
+    }
+
+    async function compressImage(
+      file,
+      maxWidth,
+      maxHeight,
+      type,
+      quality
+    ) {
+      if (!file) {
+        return null;
+      }
+
+      if (
+        ![
+          "image/png",
+          "image/jpeg",
+          "image/webp"
+        ].includes(file.type)
+      ) {
+        throw new Error(
+          "Chỉ chấp nhận ảnh PNG, JPG, JPEG hoặc WEBP."
+        );
+      }
+
+      if (file.size > 20 * 1024 * 1024) {
+        throw new Error(
+          "Ảnh gốc không được lớn hơn 20 MB."
+        );
+      }
+
+      const image =
+        await readImageFile(file);
+
+      const width =
+        image.naturalWidth ||
+        image.width;
+
+      const height =
+        image.naturalHeight ||
+        image.height;
+
+      const scale =
+        Math.min(
+          1,
+          maxWidth / width,
+          maxHeight / height
+        );
+
+      const canvas =
+        document.createElement("canvas");
+
+      canvas.width =
+        Math.max(1, Math.round(width * scale));
+
+      canvas.height =
+        Math.max(1, Math.round(height * scale));
+
+      const context =
+        canvas.getContext("2d");
+
+      if (type === "image/jpeg") {
+        context.fillStyle = "white";
+        context.fillRect(
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        );
+      }
+
+      context.drawImage(
+        image,
+        0,
+        0,
+        canvas.width,
+        canvas.height
+      );
+
+      return new Promise(function(resolve, reject) {
+        canvas.toBlob(
+          function(blob) {
+            if (blob) {
+              resolve(blob);
+            } else {
+              reject(
+                new Error(
+                  "Không thể nén ảnh."
+                )
+              );
+            }
+          },
+          type,
+          quality
+        );
+      });
+    }
+
+    async function applySettings() {
+      const settings =
+        loadTextSettings();
+
+      dom.mainTitle.textContent =
+        settings.title;
+
+      dom.mainDescription.textContent =
+        settings.description;
+
+      document.documentElement.style.setProperty(
+        "--primary",
+        settings.color
+      );
+
+      dom.schoolLogo.src =
+        "data:image/svg+xml;charset=UTF-8," +
+        encodeURIComponent(
+          "<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'>" +
+          "<circle cx='100' cy='100' r='94' fill='white' stroke='#087f5b' stroke-width='8'/>" +
+          "<path d='M45 120 L100 85 L155 120 L100 150 Z' fill='#087f5b'/>" +
+          "<path d='M72 65 L100 42 L128 65 L100 85 Z' fill='#f59e0b'/>" +
+          "<text x='100' y='178' text-anchor='middle' font-family='Arial' font-size='22' font-weight='bold' fill='#087f5b'>HN</text>" +
+          "</svg>"
+        );
+
+      try {
+        const logo =
+          await readImage("logo");
+
+        if (logo) {
+          if (state.logoUrl) {
+            URL.revokeObjectURL(
+              state.logoUrl
+            );
+          }
+
+          state.logoUrl =
+            URL.createObjectURL(logo);
+
+          dom.schoolLogo.src =
+            state.logoUrl;
+        }
+      } catch (error) {
+        console.warn(error);
+      }
+
+      document.body.style.backgroundImage =
+        "linear-gradient(" +
+        "rgba(0,55,43,0.65)," +
+        "rgba(0,55,43,0.65)" +
+        ")," +
+        "linear-gradient(" +
+        "135deg,#064e3b,#087f5b 50%,#0f766e" +
+        ")";
+
+      try {
+        const background =
+          await readImage("background");
+
+        if (background) {
+          if (state.backgroundUrl) {
+            URL.revokeObjectURL(
+              state.backgroundUrl
+            );
+          }
+
+          state.backgroundUrl =
+            URL.createObjectURL(background);
+
+          document.body.style.backgroundImage =
+            "linear-gradient(" +
+            "rgba(0,55,43,0.65)," +
+            "rgba(0,55,43,0.65)" +
+            ")," +
+            "url('" +
+            state.backgroundUrl +
+            "')";
+        }
+      } catch (error) {
+        console.warn(error);
+      }
+    }
+
+    async function saveSettings() {
+      clearSettingsError();
+
+      const title =
+        dom.titleInput.value.trim();
+
+      const description =
+        dom.descriptionInput.value.trim();
+
+      const color =
+        dom.primaryColorInput.value;
+
+      if (!title) {
+        showSettingsError(
+          "Tiêu đề không được để trống."
+        );
+        return;
+      }
+
+      if (!description) {
+        showSettingsError(
+          "Mô tả không được để trống."
+        );
+        return;
+      }
+
+      dom.saveSettings.disabled = true;
+      dom.saveSettings.textContent =
+        "Đang lưu...";
+
+      try {
+        const logoFile =
+          dom.logoInput.files[0];
+
+        const backgroundFile =
+          dom.backgroundInput.files[0];
+
+        const logoBlob =
+          logoFile
+            ? await compressImage(
+                logoFile,
+                512,
+                512,
+                "image/png",
+                0.92
+              )
+            : null;
+
+        const backgroundBlob =
+          backgroundFile
+            ? await compressImage(
+                backgroundFile,
+                1920,
+                1080,
+                "image/jpeg",
+                0.82
+              )
+            : null;
+
+        if (logoBlob) {
+          await saveImage("logo", logoBlob);
+        }
+
+        if (backgroundBlob) {
+          await saveImage(
+            "background",
+            backgroundBlob
+          );
+        }
+
+        saveTextSettings({
+          title: title,
+          description: description,
+          color: color
+        });
+
+        await applySettings();
+        closeSettings();
+
+        showToast(
+          "Đã lưu cài đặt thành công.",
+          "success"
+        );
+
+      } catch (error) {
+        console.error(error);
+
+        showSettingsError(
+          error.message ||
+          "Không thể lưu cài đặt."
+        );
+
+      } finally {
+        dom.saveSettings.disabled = false;
+        dom.saveSettings.textContent =
+          "Lưu cài đặt";
+      }
+    }
+
+    async function restoreSettings() {
+      if (
+        !window.confirm(
+          "Bạn có chắc muốn khôi phục mặc định?"
+        )
+      ) {
+        return;
+      }
+
+      try {
+        localStorage.removeItem(
+          SETTINGS_KEY
+        );
+
+        await deleteImage("logo");
+        await deleteImage("background");
+
+        await applySettings();
+        closeSettings();
+
+        showToast(
+          "Đã khôi phục mặc định.",
+          "success"
+        );
+
+      } catch (error) {
+        showSettingsError(
+          error.message ||
+          "Không thể khôi phục."
+        );
+      }
+    }
+
+    function setDate() {
+      const now =
+        new Date();
+
+      dom.currentDate.textContent =
+        now.toLocaleDateString(
+          "vi-VN",
+          {
+            weekday: "long",
+            day: "2-digit",
+            month: "2-digit",
+            year: "numeric"
+          }
+        );
+    }
+
+    function escapeHtml(value) {
+      const div =
+        document.createElement("div");
+
+      div.textContent =
+        String(value ?? "");
+
+      return div.innerHTML;
+    }
+
+    function renderRecent(data) {
+      const list =
+        data &&
+        data.thanhCong &&
+        Array.isArray(data.danhSach)
+          ? data.danhSach
+          : [];
+
+      if (!list.length) {
+        dom.recentList.innerHTML =
+          '<div class="empty">Chưa có dữ liệu</div>';
+
+        return;
+      }
+
+      dom.recentList.innerHTML =
+        list.map(function(item) {
+          return `
+            <div class="student-row">
+              <strong>
+                ${escapeHtml(item.hoTen)}
+                - ${escapeHtml(item.lop)}
+              </strong>
+              <div class="student-meta">
+                Mã: ${escapeHtml(item.maQR)}
+              </div>
+              <div class="student-meta">
+                Thời gian: ${escapeHtml(item.thoiGian)}
+              </div>
+            </div>
+          `;
+        }).join("");
+    }
+
+    function renderAbsent(data) {
+      const list =
+        data &&
+        data.thanhCong &&
+        Array.isArray(data.danhSach)
+          ? data.danhSach
+          : [];
+
+      if (!list.length) {
+        dom.absentList.innerHTML =
+          '<div class="empty">Tất cả học sinh đã điểm danh</div>';
+
+        return;
+      }
+
+      dom.absentList.innerHTML =
+        list.map(function(item) {
+          return `
+            <div class="student-row">
+              <strong>
+                ${escapeHtml(item.hoTen)}
+              </strong>
+              <div class="student-meta">
+                Lớp: ${escapeHtml(item.lop)}
+              </div>
+              <div class="student-meta">
+                Mã: ${escapeHtml(item.maQR)}
+              </div>
+            </div>
+          `;
+        }).join("");
+    }
+
+    async function refreshReport() {
+      if (!validAppsScriptUrl()) {
+        return;
+      }
+
+      dom.refreshReport.disabled = true;
+
+      try {
+        const results =
+          await Promise.all([
+            jsonp("thongke"),
+            jsonp("ganday")
+          ]);
+
+        const statistics =
+          results[0];
+
+        const recent =
+          results[1];
+
+        if (statistics.thanhCong) {
+          dom.totalStudents.textContent =
+            statistics.tongHocSinh;
+
+          dom.presentStudents.textContent =
+            statistics.daDiemDanh;
+
+          dom.absentStudents.textContent =
+            statistics.chuaDiemDanh;
+
+          dom.attendanceRate.textContent =
+            statistics.tyLe + "%";
+        }
+
+        renderRecent(recent);
+
+      } catch (error) {
+        console.error(error);
+
+      } finally {
+        dom.refreshReport.disabled = false;
+      }
+    }
+
+    async function loadAbsent() {
+      if (!validAppsScriptUrl()) {
+        showToast(
+          "Chưa cấu hình Apps Script.",
+          "error"
+        );
+        return;
+      }
+
+      dom.loadAbsent.disabled = true;
+
+      dom.absentList.innerHTML =
+        '<div class="empty">Đang tải...</div>';
+
+      try {
+        const data =
+          await jsonp("chuadiemdanh");
+
+        renderAbsent(data);
+
+      } catch (error) {
+        dom.absentList.innerHTML =
+          '<div class="empty">' +
+          escapeHtml(error.message) +
+          '</div>';
+
+      } finally {
+        dom.loadAbsent.disabled = false;
+      }
+    }
+
+    function processQr(rawCode) {
+      const code =
         String(rawCode || "")
           .trim()
           .toUpperCase();
 
-      if (!qrCode) {
+      if (!code) {
         return;
       }
 
-      if (scanningLocked) {
+      if (state.locked) {
         return;
       }
 
-      if (qrCode === lastScannedCode) {
+      if (code === state.lastCode) {
         return;
       }
 
-      scanningLocked = true;
-      lastScannedCode = qrCode;
+      if (!/^[A-Z0-9_-]{1,50}$/.test(code)) {
+        showResult(
+          "Mã QR không đúng định dạng.",
+          "error"
+        );
+        return;
+      }
 
-      setSystemState("Đang xử lý");
+      state.locked = true;
+      state.lastCode = code;
 
-      showScanResult(
-        "Đang kiểm tra mã: " + qrCode,
+      setState("Đang xử lý");
+
+      showResult(
+        "Đang kiểm tra mã: " + code,
         "warning"
       );
 
-      try {
-        const result =
-          await jsonpRequest(
-            "diemdanh",
-            {
-              maQR: qrCode
-            }
-          );
+      jsonp("diemdanh", {
+        maQR: code
+      })
+        .then(function(result) {
+          if (result && result.thanhCong) {
+            showResult(
+              "✓ " + result.hoTen +
+              "\nLớp: " + result.lop +
+              "\nĐiểm danh thành công",
+              "success"
+            );
 
-        if (result && result.thanhCong) {
-          showScanResult(
-            "✓ " +
-            safeText(result.hoTen) +
-            "\nLớp: " +
-            safeText(result.lop) +
-            "\nĐiểm danh thành công",
-            "success"
-          );
+            setState(
+              "Điểm danh thành công"
+            );
+          } else {
+            showResult(
+              "⚠ " +
+              (result.thongBao ||
+                "Không thể điểm danh."),
+              "error"
+            );
 
-          setSystemState("Điểm danh thành công");
+            setState("Không ghi nhận");
+          }
 
-        } else {
-          showScanResult(
-            "⚠ " +
-            safeText(
-              result && result.thongBao
-                ? result.thongBao
-                : "Không thể điểm danh"
-            ),
+          /*
+           * Không chờ báo cáo mới mở khóa camera.
+           */
+          refreshReport()
+            .catch(console.error);
+        })
+        .catch(function(error) {
+          showResult(
+            error.message ||
+            "Lỗi kết nối Google Sheets.",
             "error"
           );
 
-          setSystemState("Không ghi nhận");
-        }
-
-        await refreshReport();
-
-      } catch (error) {
-        console.error(
-          "Lỗi điểm danh:",
-          error
-        );
-
-        showScanResult(
-          error.message ||
-          "Lỗi kết nối Google Sheets",
-          "error"
-        );
-
-        setSystemState("Lỗi kết nối");
-      }
-
-      window.setTimeout(
-        function() {
-          scanningLocked = false;
-          lastScannedCode = "";
-
-          showScanResult(
-            "Sẵn sàng quét mã QR",
-            ""
+          setState("Lỗi kết nối");
+        })
+        .finally(function() {
+          window.clearTimeout(
+            state.timer
           );
 
-          setSystemState("Sẵn sàng");
-        },
-        3000
-      );
+          state.timer =
+            window.setTimeout(function() {
+              state.locked = false;
+              state.lastCode = "";
+              showResult(
+                "Sẵn sàng quét mã QR"
+              );
+              setState("Sẵn sàng");
+            }, 2500);
+        });
     }
 
-    function initializeScanner() {
+    function initScanner() {
       if (
-        typeof window.Html5QrcodeScanner !==
+        typeof Html5QrcodeScanner !==
         "function"
       ) {
-        showScanResult(
-          "Không tải được thư viện quét QR. Hãy kiểm tra kết nối Internet rồi tải lại trang.",
+        showResult(
+          "Không tải được thư viện quét QR.",
           "error"
         );
-
-        setSystemState("Lỗi thư viện QR");
+        setState("Lỗi thư viện QR");
         return;
       }
 
       try {
-        scanner =
+        state.scanner =
           new Html5QrcodeScanner(
             "reader",
             {
-              fps: 10,
-
-              qrbox: function(
-                viewportWidth,
-                viewportHeight
-              ) {
-                const minimumSide =
-                  Math.min(
-                    viewportWidth,
-                    viewportHeight
-                  );
-
-                const size =
-                  Math.max(
-                    180,
-                    Math.min(
-                      300,
-                      Math.floor(
-                        minimumSide * 0.72
-                      )
-                    )
-                  );
-
-                return {
-                  width: size,
-                  height: size
-                };
+              fps: 8,
+              qrbox: {
+                width: 280,
+                height: 280
               },
-
-              aspectRatio: 1,
-              rememberLastUsedCamera: true,
-
-              supportedScanTypes: [
-                Html5QrcodeScanType.SCAN_TYPE_CAMERA,
-                Html5QrcodeScanType.SCAN_TYPE_FILE
-              ]
+              rememberLastUsedCamera: true
             },
             false
           );
 
-        scanner.render(
+        state.scanner.render(
           function(decodedText) {
-            processQrCode(decodedText);
+            processQr(decodedText);
           },
-          function() {
-            /*
-              Không hiển thị lỗi liên tục trong lúc
-              camera chưa nhìn thấy mã QR.
-            */
-          }
+          function() {}
         );
 
-        showScanResult(
-          "Sẵn sàng quét mã QR",
-          ""
+        showResult(
+          "Sẵn sàng quét mã QR"
         );
 
-        setSystemState("Sẵn sàng");
+        setState("Sẵn sàng");
 
       } catch (error) {
-        console.error(
-          "Lỗi khởi tạo camera:",
-          error
-        );
+        console.error(error);
 
-        showScanResult(
+        showResult(
           "Không khởi tạo được camera: " +
-          (
-            error.message ||
-            String(error)
-          ),
+          error.message,
           "error"
         );
 
-        setSystemState("Camera chưa sẵn sàng");
+        setState(
+          "Camera chưa sẵn sàng"
+        );
       }
     }
 
-    /*
-      =====================================================
-      12. BÁO CÁO VÀ DANH SÁCH
-      =====================================================
-    */
+    function bindEvents() {
+      dom.openSettings.addEventListener(
+        "click",
+        openSettings
+      );
 
-    async function refreshReport() {
-      if (!isAppsScriptConfigured()) {
-        return;
-      }
+      dom.closeSettingsX.addEventListener(
+        "click",
+        closeSettings
+      );
 
-      elements.refreshReportButton.disabled =
-        true;
+      dom.closeSettings.addEventListener(
+        "click",
+        closeSettings
+      );
 
-      try {
-        const statistics =
-          await jsonpRequest(
-            "thongke",
-            {}
-          );
+      dom.saveSettings.addEventListener(
+        "click",
+        saveSettings
+      );
 
-        if (
-          statistics &&
-          statistics.thanhCong
-        ) {
-          elements.totalStudents.textContent =
-            numberOrZero(
-              statistics.tongHocSinh
-            );
+      dom.restoreSettings.addEventListener(
+        "click",
+        restoreSettings
+      );
 
-          elements.presentStudents.textContent =
-            numberOrZero(
-              statistics.daDiemDanh
-            );
+      dom.refreshReport.addEventListener(
+        "click",
+        refreshReport
+      );
 
-          elements.absentStudents.textContent =
-            numberOrZero(
-              statistics.chuaDiemDanh
-            );
+      dom.loadAbsent.addEventListener(
+        "click",
+        loadAbsent
+      );
 
-          elements.attendanceRate.textContent =
-            numberOrZero(
-              statistics.tyLe
-            ) + "%";
+      dom.logoInput.addEventListener(
+        "change",
+        function() {
+          dom.logoState.textContent =
+            dom.logoInput.files[0]
+              ? "Đã chọn: " +
+                dom.logoInput.files[0].name
+              : "";
         }
+      );
 
-        const recent =
-          await jsonpRequest(
-            "ganday",
-            {}
-          );
+      dom.backgroundInput.addEventListener(
+        "change",
+        function() {
+          dom.backgroundState.textContent =
+            dom.backgroundInput.files[0]
+              ? "Đã chọn: " +
+                dom.backgroundInput.files[0].name
+              : "";
+        }
+      );
 
-        renderRecentStudents(recent);
+      dom.settingsOverlay.addEventListener(
+        "click",
+        function(event) {
+          if (
+            event.target ===
+            dom.settingsOverlay
+          ) {
+            closeSettings();
+          }
+        }
+      );
 
-      } catch (error) {
-        console.error(
-          "Không tải được báo cáo:",
-          error
-        );
+      document.addEventListener(
+        "keydown",
+        function(event) {
+          if (
+            event.key === "Escape" &&
+            !dom.settingsOverlay.hidden
+          ) {
+            closeSettings();
+          }
+        }
+      );
+    }
 
+    async function initialize() {
+      cacheDom();
+      bindEvents();
+      setDate();
+
+      await applySettings();
+
+      initScanner();
+
+      if (validAppsScriptUrl()) {
+        refreshReport()
+          .catch(console.error);
+      } else {
         showToast(
-          error.message ||
-          "Không tải được báo cáo.",
+          "Hãy thay đường dẫn Apps Script trong index.html.",
           "error"
         );
-
-      } finally {
-        elements.refreshReportButton.disabled =
-          false;
       }
     }
 
-    async function loadAbsentStudents() {
-      if (!isAppsScriptConfigured()) {
-        showToast(
-          "Chưa cấu hình đường dẫn Apps Script.",
-          "error"
-        );
-
-        return;
-      }
-
-      elements.loadAbsentButton.disabled = true;
-
-      elements.absentList.innerHTML =
-        '<div class="empty-message">' +
-        "Đang tải danh sách..." +
-        "</div>";
-
-      try {
-        const result =
-          await jsonpRequest(
-            "chuadiemdanh",
-            {}
-          );
-
-        renderAbsentStudents(result);
-
-      } catch (error) {
-        console.error(
-          "Không tải được danh sách:",
-          error
-        );
-
-        elements.absentList.innerHTML =
-          '<div class="empty-message">' +
-          escapeHtml(
-            error.message ||
-            "Không tải được dữ liệu."
-          ) +
-          "</div>";
-
-      } finally {
-        elements.loadAbsentButton.disabled =
-          false;
-      }
+    if (
+      document.readyState === "loading"
+    ) {
+      document.addEventListener(
+        "DOMContentLoaded",
+        initialize,
+        { once: true }
+      );
+    } else {
+      initialize();
     }
-
-    function renderRecentStudents(result) {
-      const list =
-        result &&
-        result.thanhCong &&
-        Array.isArray(result.danhSach)
-          ? result.danhSach
-          : [];
-
-      if (list.length === 0) {
-        elements.recentList.innerHTML =
-          '<div class="empty-message">' +
-          "Chưa có dữ liệu" +
-          "</div>";
-
-        return;
-      }
-
-      elements.recentList.innerHTML =
-        list.map(function(item) {
-          return (
-            '<div class="student-row">' +
-              "<strong>" +
-                escapeHtml(item.hoTen) +
-                " - " +
-                escapeHtml(item.lop) +
-              "</strong>" +
-              '<div class="student-meta">' +
-                "Mã: " +
-                escapeHtml(item.maQR) +
-              "</div>" +
-              '<div class="student-meta">' +
-                "Thời gian: " +
-                escapeHtml(item.thoiGian) +
-              "</div>" +
-            "</div>"
-          );
-        }).join("");
-    }
-
-    function renderAbsentStudents(result) {
-      const list =
-        result &&
-        result.thanhCong &&
-        Array.isArray(result.danhSach)
-          ? result.danhSach
-          : [];
-
-      if (list.length === 0
+  </script>
+</body>
+</html>
