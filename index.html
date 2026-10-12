@@ -3,7 +3,6 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
   <title>Điểm danh QR - Trường Tiểu học Hòa Ninh</title>
 
   <script src="https://unpkg.com/html5-qrcode"></script>
@@ -11,363 +10,150 @@
   <style>
     :root {
       --mau-chu-dao: #087f5b;
-      --mau-phu: #0b6e4f;
-      --mau-thanh-cong: #198754;
-      --mau-loi: #dc3545;
-      --mau-canh-bao: #f59f00;
       --nen-the: rgba(255, 255, 255, 0.96);
       --chu: #17324d;
     }
 
-    * {
-      box-sizing: border-box;
-    }
+    * { box-sizing: border-box; }
 
     body {
       margin: 0;
       min-height: 100vh;
       font-family: Arial, Helvetica, sans-serif;
       color: var(--chu);
-
       background:
-        linear-gradient(
-          rgba(0, 45, 35, 0.50),
-          rgba(0, 45, 35, 0.50)
-        ),
+        linear-gradient(rgba(0,45,35,0.50), rgba(0,45,35,0.50)),
         url("https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1800&q=85");
-
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
     }
 
-    .khung-chinh {
-      width: min(1450px, 100%);
-      margin: 0 auto;
-      padding: 20px;
-    }
+    .khung-chinh { width: min(1450px, 100%); margin: 0 auto; padding: 20px; }
 
     .dau-trang {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-      padding: 20px;
-      border-radius: 22px;
-      color: white;
-      background: linear-gradient(
-        135deg,
-        rgba(7, 127, 91, 0.95),
-        rgba(12, 78, 58, 0.92)
-      );
-      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.20);
+      display: flex; align-items: center; gap: 18px; padding: 20px;
+      border-radius: 22px; color: white;
+      background: linear-gradient(135deg, rgba(7,127,91,0.95), rgba(12,78,58,0.92));
+      box-shadow: 0 12px 30px rgba(0,0,0,0.20);
     }
 
     .logo {
-      width: 90px;
-      height: 90px;
-      object-fit: contain;
-      border-radius: 50%;
-      background: white;
-      padding: 5px;
-      border: 3px solid rgba(255,255,255,0.8);
+      width: 90px; height: 90px; object-fit: contain; border-radius: 50%;
+      background: white; padding: 5px; border: 3px solid rgba(255,255,255,0.8);
       flex-shrink: 0;
     }
 
-    .tieu-de {
-      flex: 1;
-    }
-
-    .tieu-de h1 {
-      margin: 0;
-      font-size: clamp(24px, 4vw, 42px);
-      letter-spacing: 0.5px;
-    }
-
-    .tieu-de p {
-      margin: 8px 0 0;
-      font-size: 16px;
-      opacity: 0.95;
-    }
+    .tieu-de { flex: 1; }
+    .tieu-de h1 { margin: 0; font-size: clamp(24px, 4vw, 42px); letter-spacing: 0.5px; }
+    .tieu-de p { margin: 8px 0 0; font-size: 16px; opacity: 0.95; }
 
     .nut-cai-dat {
-      border: none;
-      border-radius: 12px;
-      padding: 12px 16px;
-      background: white;
-      color: var(--mau-chu-dao);
-      font-weight: bold;
-      cursor: pointer;
-      white-space: nowrap;
+      border: none; border-radius: 12px; padding: 12px 16px;
+      background: white; color: var(--mau-chu-dao); font-weight: bold;
+      cursor: pointer; white-space: nowrap;
     }
 
     .thanh-thong-tin {
-      display: flex;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin: 18px 0;
-      color: white;
+      display: flex; justify-content: space-between; flex-wrap: wrap;
+      gap: 10px; margin: 18px 0; color: white;
     }
 
     .nhan-thong-tin {
-      padding: 10px 15px;
-      border-radius: 12px;
-      background: rgba(255,255,255,0.16);
-      backdrop-filter: blur(8px);
+      padding: 10px 15px; border-radius: 12px;
+      background: rgba(255,255,255,0.16); backdrop-filter: blur(8px);
     }
 
     .bo-cuc {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(350px, 0.9fr);
-      gap: 20px;
+      display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(350px, 0.9fr); gap: 20px;
     }
 
     .the {
-      background: var(--nen-the);
-      border-radius: 20px;
-      padding: 22px;
+      background: var(--nen-the); border-radius: 20px; padding: 22px;
       box-shadow: 0 12px 30px rgba(0,0,0,0.18);
     }
 
-    .the h2 {
-      margin: 0 0 16px;
-      color: var(--mau-chu-dao);
-      font-size: 22px;
-    }
+    .the h2 { margin: 0 0 16px; color: var(--mau-chu-dao); font-size: 22px; }
 
     #reader {
-      width: 100%;
-      max-width: 600px;
-      margin: 0 auto 18px;
-      overflow: hidden;
-      border-radius: 16px;
-      border: 3px solid #d8eee6;
+      width: 100%; max-width: 600px; margin: 0 auto 18px;
+      overflow: hidden; border-radius: 16px; border: 3px solid #d8eee6;
     }
 
     .ket-qua {
-      min-height: 85px;
-      padding: 18px;
-      border-radius: 14px;
-      background: #edf2f7;
-      font-size: 19px;
-      font-weight: bold;
-      white-space: pre-line;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
+      min-height: 85px; padding: 18px; border-radius: 14px; background: #edf2f7;
+      font-size: 19px; font-weight: bold; white-space: pre-line;
+      display: flex; align-items: center; justify-content: center; text-align: center;
     }
 
-    .thanh-cong {
-      background: #d1fae5;
-      color: #047857;
-    }
+    .thanh-cong { background: #d1fae5; color: #047857; }
+    .that-bai { background: #fee2e2; color: #b91c1c; }
+    .canh-bao { background: #fef3c7; color: #92400e; }
 
-    .that-bai {
-      background: #fee2e2;
-      color: #b91c1c;
-    }
+    .thong-ke { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
 
-    .canh-bao {
-      background: #fef3c7;
-      color: #92400e;
-    }
+    .o-thong-ke { border-radius: 16px; color: white; padding: 18px; min-height: 115px; }
+    .o-thong-ke h3 { margin: 0 0 12px; font-size: 15px; }
+    .so-lieu { font-size: 35px; font-weight: bold; }
 
-    .thong-ke {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-    }
+    .tong { background: linear-gradient(135deg, #1971c2, #1864ab); }
+    .da-diem-danh { background: linear-gradient(135deg, #2f9e44, #087f5b); }
+    .chua-diem-danh { background: linear-gradient(135deg, #e03131, #c92a2a); }
+    .ty-le { background: linear-gradient(135deg, #7048e8, #5f3dc4); }
 
-    .o-thong-ke {
-      border-radius: 16px;
-      color: white;
-      padding: 18px;
-      min-height: 115px;
-    }
-
-    .o-thong-ke h3 {
-      margin: 0 0 12px;
-      font-size: 15px;
-    }
-
-    .so-lieu {
-      font-size: 35px;
-      font-weight: bold;
-    }
-
-    .tong {
-      background: linear-gradient(135deg, #1971c2, #1864ab);
-    }
-
-    .da-diem-danh {
-      background: linear-gradient(135deg, #2f9e44, #087f5b);
-    }
-
-    .chua-diem-danh {
-      background: linear-gradient(135deg, #e03131, #c92a2a);
-    }
-
-    .ty-le {
-      background: linear-gradient(135deg, #7048e8, #5f3dc4);
-    }
-
-    .tieu-de-phu {
-      margin: 24px 0 10px;
-      color: var(--mau-chu-dao);
-      font-size: 18px;
-      font-weight: bold;
-    }
+    .tieu-de-phu { margin: 24px 0 10px; color: var(--mau-chu-dao); font-size: 18px; font-weight: bold; }
 
     .danh-sach {
-      max-height: 260px;
-      overflow-y: auto;
-      border: 1px solid #dbe5ec;
-      border-radius: 12px;
-      background: #f8fafc;
+      max-height: 260px; overflow-y: auto; border: 1px solid #dbe5ec;
+      border-radius: 12px; background: #f8fafc;
     }
 
-    .dong-hoc-sinh {
-      padding: 12px;
-      border-bottom: 1px solid #e5e7eb;
-    }
+    .dong-hoc-sinh { padding: 12px; border-bottom: 1px solid #e5e7eb; }
+    .dong-hoc-sinh:last-child { border-bottom: none; }
+    .dong-hoc-sinh strong { display: block; margin-bottom: 4px; }
 
-    .dong-hoc-sinh:last-child {
-      border-bottom: none;
-    }
-
-    .dong-hoc-sinh strong {
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    .nhom-nut {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 18px;
-    }
-
-    .nhom-nut button {
-      border: none;
-      border-radius: 10px;
-      padding: 11px 14px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    .nut-xanh {
-      color: white;
-      background: var(--mau-chu-dao);
-    }
-
-    .nut-xam {
-      color: #263238;
-      background: #e2e8f0;
-    }
+    .nhom-nut { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
+    .nhom-nut button { border: none; border-radius: 10px; padding: 11px 14px; cursor: pointer; font-weight: bold; }
+    .nut-xanh { color: white; background: var(--mau-chu-dao); }
+    .nut-xam { color: #263238; background: #e2e8f0; }
 
     .lop-phu {
-      display: none;
-      position: fixed;
-      inset: 0;
-      z-index: 1000;
-      background: rgba(0,0,0,0.55);
-      padding: 20px;
-      overflow-y: auto;
+      display: none; position: fixed; inset: 0; z-index: 9999;
+      background: rgba(0,0,0,0.6); padding: 20px; overflow-y: auto;
     }
 
     .hop-cai-dat {
-      width: min(650px, 100%);
-      margin: 30px auto;
-      padding: 24px;
-      border-radius: 20px;
-      background: white;
-      box-shadow: 0 15px 45px rgba(0,0,0,0.30);
+      width: min(650px, 100%); margin: 30px auto; padding: 24px;
+      border-radius: 20px; background: white; box-shadow: 0 15px 45px rgba(0,0,0,0.30);
     }
 
-    .hop-cai-dat h2 {
-      margin-top: 0;
-      color: var(--mau-chu-dao);
-    }
+    .hop-cai-dat h2 { margin-top: 0; color: var(--mau-chu-dao); }
 
-    .nhom-form {
-      margin: 15px 0;
-    }
-
-    .nhom-form label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: bold;
-    }
-
+    .nhom-form { margin: 15px 0; }
+    .nhom-form label { display: block; margin-bottom: 6px; font-weight: bold; }
     .nhom-form input[type="text"],
     .nhom-form input[type="color"],
     .nhom-form input[type="file"] {
-      width: 100%;
-      padding: 10px;
-      border: 1px solid #cbd5e1;
-      border-radius: 9px;
-      background: white;
+      width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 9px; background: white;
     }
-
-    .nhom-form input[type="color"] {
-      height: 46px;
-      padding: 3px;
-    }
+    .nhom-form input[type="color"] { height: 46px; padding: 3px; }
 
     .ghi-chu {
-      padding: 12px;
-      color: #475569;
-      background: #f1f5f9;
-      border-radius: 10px;
-      font-size: 14px;
-      line-height: 1.5;
+      padding: 12px; color: #475569; background: #f1f5f9;
+      border-radius: 10px; font-size: 14px; line-height: 1.5;
     }
 
-    .chan-cai-dat {
-      display: flex;
-      justify-content: flex-end;
-      flex-wrap: wrap;
-      gap: 10px;
-      margin-top: 20px;
-    }
+    .chan-cai-dat { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
+    .chan-cai-dat button { border: none; border-radius: 10px; padding: 11px 16px; cursor: pointer; font-weight: bold; }
 
-    .chan-cai-dat button {
-      border: none;
-      border-radius: 10px;
-      padding: 11px 16px;
-      cursor: pointer;
-      font-weight: bold;
-    }
-
-    @media (max-width: 900px) {
-      .bo-cuc {
-        grid-template-columns: 1fr;
-      }
-    }
+    @media (max-width: 900px) { .bo-cuc { grid-template-columns: 1fr; } }
 
     @media (max-width: 600px) {
-      .khung-chinh {
-        padding: 10px;
-      }
-
-      .dau-trang {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      .logo {
-        width: 75px;
-        height: 75px;
-      }
-
-      .nut-cai-dat {
-        width: 100%;
-      }
-
-      .thong-ke {
-        grid-template-columns: 1fr;
-      }
+      .khung-chinh { padding: 10px; }
+      .dau-trang { align-items: flex-start; flex-direction: column; }
+      .logo { width: 75px; height: 75px; }
+      .nut-cai-dat { width: 100%; }
+      .thong-ke { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -386,40 +172,27 @@
         <p id="moTa">Trường Tiểu học Hòa Ninh - Quản lý điểm danh nhanh chóng và chính xác</p>
       </div>
 
-      <button class="nut-cai-dat" noscript="moCaiDat()">
+      <button id="nutMoCaiDat" class="nut-cai-dat" type="button">
         ⚙ Cài đặt giao diện
       </button>
     </header>
 
     <div class="thanh-thong-tin">
-      <div class="nhan-thong-tin">
-        📅 Ngày: <span id="ngayHienTai"></span>
-      </div>
-
-      <div class="nhan-thong-tin">
-        🟢 Trạng thái: <span id="trangThaiHeThong">Sẵn sàng</span>
-      </div>
+      <div class="nhan-thong-tin">📅 Ngày: <span id="ngayHienTai"></span></div>
+      <div class="nhan-thong-tin">🟢 Trạng thái: <span id="trangThaiHeThong">Sẵn sàng</span></div>
     </div>
 
     <main class="bo-cuc">
 
       <section class="the">
         <h2>📷 Quét mã QR</h2>
-
         <div id="reader"></div>
 
-        <div id="ketQua" class="ket-qua">
-          Sẵn sàng quét mã QR
-        </div>
+        <div id="ketQua" class="ket-qua">Sẵn sàng quét mã QR</div>
 
         <div class="nhom-nut">
-          <button class="nut-xanh" noscript="taiBaoCao()">
-            ↻ Làm mới báo cáo
-          </button>
-
-          <button class="nut-xam" noscript="taiDanhSachChuaDiemDanh()">
-            👥 Xem học sinh chưa điểm danh
-          </button>
+          <button id="nutLamMoi" class="nut-xanh" type="button">↻ Làm mới báo cáo</button>
+          <button id="nutXemChua" class="nut-xam" type="button">👥 Xem học sinh chưa điểm danh</button>
         </div>
       </section>
 
@@ -431,17 +204,14 @@
             <h3>Tổng số học sinh</h3>
             <div id="tongHocSinh" class="so-lieu">0</div>
           </div>
-
           <div class="o-thong-ke da-diem-danh">
             <h3>Đã điểm danh</h3>
             <div id="daDiemDanh" class="so-lieu">0</div>
           </div>
-
           <div class="o-thong-ke chua-diem-danh">
             <h3>Chưa điểm danh</h3>
             <div id="chuaDiemDanh" class="so-lieu">0</div>
           </div>
-
           <div class="o-thong-ke ty-le">
             <h3>Tỷ lệ hoàn thành</h3>
             <div id="tyLe" class="so-lieu">0%</div>
@@ -449,14 +219,10 @@
         </div>
 
         <div class="tieu-de-phu">Học sinh vừa điểm danh</div>
-        <div id="danhSachGanDay" class="danh-sach">
-          Chưa có dữ liệu
-        </div>
+        <div id="danhSachGanDay" class="danh-sach">Chưa có dữ liệu</div>
 
         <div class="tieu-de-phu">Học sinh chưa điểm danh</div>
-        <div id="danhSachChua" class="danh-sach">
-          Nhấn nút để tải danh sách
-        </div>
+        <div id="danhSachChua" class="danh-sach">Nhấn nút để tải danh sách</div>
       </section>
 
     </main>
@@ -469,14 +235,12 @@
 
       <div class="nhom-form">
         <label for="nhapTieuDe">Tiêu đề hệ thống</label>
-        <input id="nhapTieuDe" type="text"
-               placeholder="Ví dụ: HỆ THỐNG ĐIỂM DANH QR">
+        <input id="nhapTieuDe" type="text" placeholder="Ví dụ: HỆ THỐNG ĐIỂM DANH QR">
       </div>
 
       <div class="nhom-form">
         <label for="nhapMoTa">Mô tả bên dưới tiêu đề</label>
-        <input id="nhapMoTa" type="text"
-               placeholder="Ví dụ: Trường Tiểu học Hòa Ninh">
+        <input id="nhapMoTa" type="text" placeholder="Ví dụ: Trường Tiểu học Hòa Ninh">
       </div>
 
       <div class="nhom-form">
@@ -500,27 +264,16 @@
       </div>
 
       <div class="chan-cai-dat">
-        <button class="nut-xam" noscript="dongCaiDat()">
-          Đóng
-        </button>
-
-        <button class="nut-xam" noscript="khoiPhucMacDinh()">
-          Khôi phục mặc định
-        </button>
-
-        <button class="nut-xanh" noscript="luuCaiDat()">
-          Lưu cài đặt
-        </button>
+        <button id="nutDongCaiDat" class="nut-xam" type="button">Đóng</button>
+        <button id="nutKhoiPhuc" class="nut-xam" type="button">Khôi phục mặc định</button>
+        <button id="nutLuuCaiDat" class="nut-xanh" type="button">Lưu cài đặt</button>
       </div>
     </div>
   </div>
 
   <script>
-    /*
-      THAY BẰNG LINK APPS SCRIPT CỦA THẦY
-    */
-    const URL_APPS_SCRIPT =
-      "https://script.google.com/macros/s/AKfycbyMc1rCy39RKz9RYKSBqpTdyuzQdx-S0q9TAWddFvThg-tHZcohOch28pFqrbhbDUcD2g/exec";
+    // THAY BẰNG LINK APPS SCRIPT CỦA THẦY (kết thúc bằng /exec)
+    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbyMc1rCy39RKz9RYKSBqpTdyuzQdx-S0q9TAWddFvThg-tHZcohOch28pFqrbhbDUcD2g/exec";
 
     let scanner = null;
     let dangXuLy = false;
@@ -537,88 +290,50 @@
     function layCaiDat() {
       try {
         const duLieu = localStorage.getItem("caiDatGiaoDienQR");
-
-        if (!duLieu) {
-          return { ...CAI_DAT_MAC_DINH };
-        }
-
-        return {
-          ...CAI_DAT_MAC_DINH,
-          ...JSON.parse(duLieu)
-        };
+        if (!duLieu) return { ...CAI_DAT_MAC_DINH };
+        return { ...CAI_DAT_MAC_DINH, ...JSON.parse(duLieu) };
       } catch (loi) {
         return { ...CAI_DAT_MAC_DINH };
       }
     }
 
     function luuCaiDatVaoMay(caiDat) {
-      localStorage.setItem(
-        "caiDatGiaoDienQR",
-        JSON.stringify(caiDat)
-      );
+      localStorage.setItem("caiDatGiaoDienQR", JSON.stringify(caiDat));
     }
 
     function apDungCaiDat(caiDat) {
-      document.getElementById("tieuDe").textContent =
-        caiDat.tieuDe;
-
-      document.getElementById("moTa").textContent =
-        caiDat.moTa;
-
-      document.documentElement.style.setProperty(
-        "--mau-chu-dao",
-        caiDat.mau
-      );
+      document.getElementById("tieuDe").textContent = caiDat.tieuDe;
+      document.getElementById("moTa").textContent = caiDat.moTa;
+      document.documentElement.style.setProperty("--mau-chu-dao", caiDat.mau);
 
       if (caiDat.logo) {
-        document.getElementById("logoTruong").src =
-          caiDat.logo;
+        document.getElementById("logoTruong").src = caiDat.logo;
       }
 
       if (caiDat.nen) {
         document.body.style.backgroundImage =
-          "linear-gradient(rgba(0,45,35,0.50), rgba(0,45,35,0.50)), url('" +
-          caiDat.nen +
-          "')";
+          "linear-gradient(rgba(0,45,35,0.50), rgba(0,45,35,0.50)), url('" + caiDat.nen + "')";
       }
     }
 
     function moCaiDat() {
       const caiDat = layCaiDat();
-
-      document.getElementById("nhapTieuDe").value =
-        caiDat.tieuDe;
-
-      document.getElementById("nhapMoTa").value =
-        caiDat.moTa;
-
-      document.getElementById("nhapMau").value =
-        caiDat.mau;
-
-      document.getElementById("lopCaiDat").style.display =
-        "block";
+      document.getElementById("nhapTieuDe").value = caiDat.tieuDe || "";
+      document.getElementById("nhapMoTa").value = caiDat.moTa || "";
+      document.getElementById("nhapMau").value = caiDat.mau || "#087f5b";
+      document.getElementById("lopCaiDat").style.display = "block";
     }
 
     function dongCaiDat() {
-      document.getElementById("lopCaiDat").style.display =
-        "none";
+      document.getElementById("lopCaiDat").style.display = "none";
     }
 
     function docFileAnh(input) {
       return new Promise(function(resolve) {
         const file = input.files[0];
-
-        if (!file) {
-          resolve("");
-          return;
-        }
-
+        if (!file) { resolve(""); return; }
         const reader = new FileReader();
-
-        reader.noscript = function(e) {
-          resolve(e.target.result);
-        };
-
+        reader.noscript = function(e) { resolve(e.target.result); };
         reader.readAsDataURL(file);
       });
     }
@@ -627,49 +342,26 @@
       const caiDatCu = layCaiDat();
 
       const caiDatMoi = {
-        tieuDe:
-          document.getElementById("nhapTieuDe").value.trim() ||
-          caiDatCu.tieuDe,
-
-        moTa:
-          document.getElementById("nhapMoTa").value.trim() ||
-          caiDatCu.moTa,
-
-        mau:
-          document.getElementById("nhapMau").value ||
-          caiDatCu.mau,
-
+        tieuDe: document.getElementById("nhapTieuDe").value.trim() || caiDatCu.tieuDe,
+        moTa: document.getElementById("nhapMoTa").value.trim() || caiDatCu.moTa,
+        mau: document.getElementById("nhapMau").value || caiDatCu.mau,
         logo: caiDatCu.logo,
-
         nen: caiDatCu.nen
       };
 
-      const logoMoi = await docFileAnh(
-        document.getElementById("nhapLogo")
-      );
+      const logoMoi = await docFileAnh(document.getElementById("nhapLogo"));
+      const nenMoi = await docFileAnh(document.getElementById("nhapNen"));
 
-      const nenMoi = await docFileAnh(
-        document.getElementById("nhapNen")
-      );
-
-      if (logoMoi) {
-        caiDatMoi.logo = logoMoi;
-      }
-
-      if (nenMoi) {
-        caiDatMoi.nen = nenMoi;
-      }
+      if (logoMoi) caiDatMoi.logo = logoMoi;
+      if (nenMoi) caiDatMoi.nen = nenMoi;
 
       try {
         luuCaiDatVaoMay(caiDatMoi);
         apDungCaiDat(caiDatMoi);
         dongCaiDat();
-
         alert("Đã lưu cài đặt giao diện trên máy này.");
       } catch (loi) {
-        alert(
-          "Không thể lưu ảnh. Thầy hãy chọn ảnh có dung lượng nhỏ hơn."
-        );
+        alert("Không thể lưu ảnh. Thầy hãy chọn ảnh có dung lượng nhỏ hơn.");
       }
     }
 
@@ -688,37 +380,21 @@
 
     function jsonp(action, params = {}) {
       return new Promise(function(resolve, reject) {
-        const callbackName =
-          "cb_" + Date.now() + "_" +
-          Math.floor(Math.random() * 10000);
-
+        const callbackName = "cb_" + Date.now() + "_" + Math.floor(Math.random() * 10000);
         const script = document.createElement("script");
 
         params.action = action;
         params.callback = callbackName;
 
-        const query =
-          new URLSearchParams(params).toString();
+        const query = new URLSearchParams(params).toString();
+        script.src = URL_APPS_SCRIPT + "?" + query;
 
-        script.src =
-          URL_APPS_SCRIPT + "?" + query;
-
-        window[callbackName] = function(data) {
-          resolve(data);
-          donDep();
-        };
-
-        script.noscript = function() {
-          reject(new Error("Không kết nối được Apps Script"));
-          donDep();
-        };
+        window[callbackName] = function(data) { resolve(data); donDep(); };
+        script.noscript = function() { reject(new Error("Không kết nối được Apps Script")); donDep(); };
 
         function donDep() {
           delete window[callbackName];
-
-          if (script.parentNode) {
-            script.parentNode.removeChild(script);
-          }
+          if (script.parentNode) script.parentNode.removeChild(script);
         }
 
         document.body.appendChild(script);
@@ -726,71 +402,35 @@
     }
 
     async function guiMaQR(maQR) {
-      maQR = String(maQR || "")
-        .trim()
-        .toUpperCase();
-
-      if (!maQR || dangXuLy || maQR === maVuaQuet) {
-        return;
-      }
+      maQR = String(maQR || "").trim().toUpperCase();
+      if (!maQR || dangXuLy || maQR === maVuaQuet) return;
 
       dangXuLy = true;
       maVuaQuet = maQR;
 
-      if (scanner) {
-        try {
-          scanner.pause(true);
-        } catch (loi) {}
-      }
+      if (scanner) { try { scanner.pause(true); } catch (loi) {} }
 
-      hienThiKetQua(
-        "Đang kiểm tra mã: " + maQR,
-        "canh-bao"
-      );
+      hienThiKetQua("Đang kiểm tra mã: " + maQR, "canh-bao");
 
       try {
-        const ketQua = await jsonp(
-          "diemdanh",
-          { maQR: maQR }
-        );
+        const ketQua = await jsonp("diemdanh", { maQR: maQR });
 
         if (ketQua.thanhCong) {
-          hienThiKetQua(
-            "✓ " + ketQua.hoTen +
-            "\nLớp: " + ketQua.lop +
-            "\nĐiểm danh thành công",
-            "thanh-cong"
-          );
+          hienThiKetQua("✓ " + ketQua.hoTen + "\nLớp: " + ketQua.lop + "\nĐiểm danh thành công", "thanh-cong");
         } else {
-          hienThiKetQua(
-            "⚠ " + ketQua.thongBao,
-            "that-bai"
-          );
+          hienThiKetQua("⚠ " + ketQua.thongBao, "that-bai");
         }
 
         await taiBaoCao();
-
       } catch (loi) {
-        hienThiKetQua(
-          "Lỗi kết nối Google Sheets",
-          "that-bai"
-        );
+        hienThiKetQua("Lỗi kết nối Google Sheets", "that-bai");
       }
 
       setTimeout(function() {
         dangXuLy = false;
         maVuaQuet = "";
-
-        if (scanner) {
-          try {
-            scanner.resume();
-          } catch (loi) {}
-        }
-
-        hienThiKetQua(
-          "Sẵn sàng quét mã QR",
-          ""
-        );
+        if (scanner) { try { scanner.resume(); } catch (loi) {} }
+        hienThiKetQua("Sẵn sàng quét mã QR", "");
       }, 2500);
     }
 
@@ -799,41 +439,28 @@
         const thongKe = await jsonp("thongke");
 
         if (thongKe.thanhCong) {
-          document.getElementById("tongHocSinh").textContent =
-            thongKe.tongHocSinh;
-
-          document.getElementById("daDiemDanh").textContent =
-            thongKe.daDiemDanh;
-
-          document.getElementById("chuaDiemDanh").textContent =
-            thongKe.chuaDiemDanh;
-
-          document.getElementById("tyLe").textContent =
-            thongKe.tyLe + "%";
+          document.getElementById("tongHocSinh").textContent = thongKe.tongHocSinh;
+          document.getElementById("daDiemDanh").textContent = thongKe.daDiemDanh;
+          document.getElementById("chuaDiemDanh").textContent = thongKe.chuaDiemDanh;
+          document.getElementById("tyLe").textContent = thongKe.tyLe + "%";
         }
 
         const ganDay = await jsonp("ganday");
         const box = document.getElementById("danhSachGanDay");
 
-        if (
-          ganDay.thanhCong &&
-          ganDay.danhSach &&
-          ganDay.danhSach.length > 0
-        ) {
-          box.innerHTML =
-            ganDay.danhSach.map(function(item) {
-              return `
-                <div class="dong-hoc-sinh">
-                  <strong>${item.hoTen} - ${item.lop}</strong>
-                  <div>Mã: ${item.maQR}</div>
-                  <div>Thời gian: ${item.thoiGian}</div>
-                </div>
-              `;
-            }).join("");
+        if (ganDay.thanhCong && ganDay.danhSach && ganDay.danhSach.length > 0) {
+          box.innerHTML = ganDay.danhSach.map(function(item) {
+            return `
+              <div class="dong-hoc-sinh">
+                <strong>${item.hoTen} - ${item.lop}</strong>
+                <div>Mã: ${item.maQR}</div>
+                <div>Thời gian: ${item.thoiGian}</div>
+              </div>
+            `;
+          }).join("");
         } else {
           box.textContent = "Chưa có dữ liệu";
         }
-
       } catch (loi) {
         console.log(loi);
       }
@@ -841,74 +468,55 @@
 
     async function taiDanhSachChuaDiemDanh() {
       try {
-        const data =
-          await jsonp("chuadiemdanh");
+        const data = await jsonp("chuadiemdanh");
+        const box = document.getElementById("danhSachChua");
 
-        const box =
-          document.getElementById("danhSachChua");
-
-        if (
-          data.thanhCong &&
-          data.danhSach &&
-          data.danhSach.length > 0
-        ) {
-          box.innerHTML =
-            data.danhSach.map(function(item) {
-              return `
-                <div class="dong-hoc-sinh">
-                  <strong>${item.hoTen}</strong>
-                  <div>Lớp: ${item.lop}</div>
-                  <div>Mã: ${item.maQR}</div>
-                </div>
-              `;
-            }).join("");
+        if (data.thanhCong && data.danhSach && data.danhSach.length > 0) {
+          box.innerHTML = data.danhSach.map(function(item) {
+            return `
+              <div class="dong-hoc-sinh">
+                <strong>${item.hoTen}</strong>
+                <div>Lớp: ${item.lop}</div>
+                <div>Mã: ${item.maQR}</div>
+              </div>
+            `;
+          }).join("");
         } else {
-          box.textContent =
-            "Tất cả học sinh đã điểm danh";
+          box.textContent = "Tất cả học sinh đã điểm danh";
         }
-
       } catch (loi) {
-        document.getElementById("danhSachChua").textContent =
-          "Không tải được dữ liệu";
+        document.getElementById("danhSachChua").textContent = "Không tải được dữ liệu";
       }
     }
 
-    function khiQuetThanhCong(maQR) {
-      guiMaQR(maQR);
-    }
-
+    function khiQuetThanhCong(maQR) { guiMaQR(maQR); }
     function khiQuetThatBai() {}
 
     function hienThiNgay() {
       const ngay = new Date();
-
-      document.getElementById("ngayHienTai").textContent =
-        ngay.toLocaleDateString("vi-VN");
+      document.getElementById("ngayHienTai").textContent = ngay.toLocaleDateString("vi-VN");
     }
 
     document.addEventListener("DOMContentLoaded", function() {
-      const caiDat = layCaiDat();
+      // Gắn sự kiện cho các nút (thay cho noscript để tránh lỗi)
+      document.getElementById("nutMoCaiDat").addEventListener("click", moCaiDat);
+      document.getElementById("nutDongCaiDat").addEventListener("click", dongCaiDat);
+      document.getElementById("nutKhoiPhuc").addEventListener("click", khoiPhucMacDinh);
+      document.getElementById("nutLuuCaiDat").addEventListener("click", luuCaiDat);
+      document.getElementById("nutLamMoi").addEventListener("click", taiBaoCao);
+      document.getElementById("nutXemChua").addEventListener("click", taiDanhSachChuaDiemDanh);
 
+      const caiDat = layCaiDat();
       apDungCaiDat(caiDat);
       hienThiNgay();
 
       scanner = new Html5QrcodeScanner(
         "reader",
-        {
-          fps: 10,
-          qrbox: {
-            width: 300,
-            height: 300
-          },
-          rememberLastUsedCamera: true
-        },
+        { fps: 10, qrbox: { width: 300, height: 300 }, rememberLastUsedCamera: true },
         false
       );
 
-      scanner.render(
-        khiQuetThanhCong,
-        khiQuetThatBai
-      );
+      scanner.render(khiQuetThanhCong, khiQuetThatBai);
 
       taiBaoCao();
     });
