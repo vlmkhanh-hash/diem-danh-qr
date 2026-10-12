@@ -1,237 +1,500 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-
-  <title>Điểm danh bằng mã QR</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hệ thống điểm danh QR</title>
 
   <script src="https://unpkg.com/html5-qrcode"></script>
 
   <style>
+    :root {
+      --primary: #2563eb;
+      --success: #16a34a;
+      --danger: #dc2626;
+      --warning: #d97706;
+      --text: #0f172a;
+      --card-bg: rgba(255, 255, 255, 0.92);
+      --overlay: rgba(15, 23, 42, 0.45);
+      --radius: 18px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     body {
-      font-family: Arial, sans-serif;
-      background: #eef2ff;
       margin: 0;
-      padding: 20px;
+      font-family: Arial, sans-serif;
+      color: white;
+      background-image:
+        linear-gradient(var(--overlay), var(--overlay)),
+        url('https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1600&q=80');
+      background-size: cover;
+      background-position: center;
+      background-attachment: fixed;
+      min-height: 100vh;
     }
 
-    .khung {
-      max-width: 650px;
-      margin: auto;
+    .wrapper {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    .hero {
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(10px);
+      border-radius: 24px;
+      padding: 24px;
+      margin-bottom: 20px;
+      border: 1px solid rgba(255,255,255,0.18);
+    }
+
+    .hero h1 {
+      margin: 0 0 8px 0;
+      font-size: 34px;
+    }
+
+    .hero p {
+      margin: 0;
+      opacity: 0.95;
+      font-size: 16px;
+    }
+
+    .toolbar {
+      margin-top: 16px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .toolbar input {
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: none;
+      min-width: 240px;
+    }
+
+    .toolbar button {
       background: white;
-      padding: 25px;
-      border-radius: 16px;
-      text-align: center;
-      box-shadow: 0 3px 15px rgba(0, 0, 0, 0.15);
+      color: var(--primary);
+      border: none;
+      border-radius: 10px;
+      padding: 10px 14px;
+      font-weight: bold;
+      cursor: pointer;
     }
 
-    h1 {
-      color: #1e3a8a;
+    .main-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 20px;
+    }
+
+    .card {
+      background: var(--card-bg);
+      color: var(--text);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+    }
+
+    .card h2 {
       margin-top: 0;
+      font-size: 22px;
     }
 
     #reader {
-      max-width: 500px;
-      margin: 20px auto;
+      width: 100%;
+      max-width: 520px;
+      margin: 0 auto 16px auto;
+      overflow: hidden;
+      border-radius: 16px;
     }
 
-    #ketQua {
-      white-space: pre-line;
-      padding: 18px;
-      border-radius: 10px;
-      font-size: 20px;
+    .status-box {
+      min-height: 88px;
+      border-radius: 14px;
+      padding: 16px;
+      font-size: 18px;
       font-weight: bold;
-      background: #f1f5f9;
-      min-height: 30px;
+      white-space: pre-line;
+      background: #e2e8f0;
     }
 
-    .xanh {
-      background: #dcfce7 !important;
+    .success {
+      background: #dcfce7;
       color: #166534;
     }
 
-    .do {
-      background: #fee2e2 !important;
+    .danger {
+      background: #fee2e2;
       color: #991b1b;
     }
 
-    .vang {
-      background: #fef3c7 !important;
+    .warning {
+      background: #fef3c7;
       color: #92400e;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 14px;
+    }
+
+    .stat {
+      border-radius: 16px;
+      padding: 18px;
+      color: white;
+    }
+
+    .stat h3 {
+      margin: 0 0 8px 0;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .stat .num {
+      font-size: 34px;
+      font-weight: 700;
+    }
+
+    .bg1 { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
+    .bg2 { background: linear-gradient(135deg, #16a34a, #15803d); }
+    .bg3 { background: linear-gradient(135deg, #dc2626, #b91c1c); }
+    .bg4 { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
+
+    .section-title {
+      margin: 18px 0 10px 0;
+      font-size: 18px;
+      font-weight: bold;
+      color: var(--text);
+    }
+
+    .list-box {
+      max-height: 320px;
+      overflow: auto;
+      background: #f8fafc;
+      border-radius: 12px;
+      padding: 10px;
+      border: 1px solid #e2e8f0;
+    }
+
+    .item {
+      padding: 12px;
+      border-bottom: 1px solid #e2e8f0;
+    }
+
+    .item:last-child {
+      border-bottom: none;
+    }
+
+    .item strong {
+      display: block;
+      margin-bottom: 4px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 16px;
+    }
+
+    .actions button {
+      border: none;
+      border-radius: 10px;
+      padding: 10px 14px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+
+    .btn-secondary {
+      background: #e2e8f0;
+      color: #0f172a;
+    }
+
+    .footer-note {
+      margin-top: 12px;
+      color: #475569;
+      font-size: 14px;
+    }
+
+    @media (max-width: 960px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .stats {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .stats {
+        grid-template-columns: 1fr;
+      }
+
+      .hero h1 {
+        font-size: 26px;
+      }
     }
   </style>
 </head>
-
 <body>
+  <div class="wrapper">
+    <div class="hero">
+      <h1 id="tieuDe">HỆ THỐNG ĐIỂM DANH QR</h1>
+      <p id="moTa">Quét mã nhanh, quản lý chuyên nghiệp, dùng được cho nhiều mục đích.</p>
 
-  <div class="khung">
-    <h1>ĐIỂM DANH BẰNG MÃ QR</h1>
+      <div class="toolbar">
+        <input id="bgInput" type="text" placeholder="Dán link ảnh nền tại đây" />
+        <button noscript="doiAnhNen()">Đổi ảnh nền</button>
 
-    <p>Đưa mã QR vào giữa khung camera.</p>
+        <input id="titleInput" type="text" placeholder="Nhập tiêu đề mới" />
+        <button noscript="doiTieuDe()">Đổi tiêu đề</button>
+      </div>
+    </div>
 
-    <div id="reader"></div>
+    <div class="main-grid">
+      <div class="card">
+        <h2>Quét mã QR</h2>
+        <div id="reader"></div>
 
-    <div id="ketQua">
-      Sẵn sàng quét mã QR
+        <div id="ketQua" class="status-box">
+          Sẵn sàng quét mã QR
+        </div>
+
+        <div class="actions">
+          <button class="btn-primary" noscript="taiBaoCao()">Làm mới báo cáo</button>
+          <button class="btn-secondary" noscript="taiDanhSachChuaDiemDanh()">Xem danh sách chưa điểm danh</button>
+        </div>
+
+        <div class="footer-note">
+          Có thể thay ảnh nền và tiêu đề để dùng cho lớp học, sự kiện, hội nghị, câu lạc bộ.
+        </div>
+      </div>
+
+      <div class="card">
+        <h2>Tổng hợp báo cáo</h2>
+
+        <div class="stats">
+          <div class="stat bg1">
+            <h3>Tổng số học sinh</h3>
+            <div class="num" id="tongHocSinh">0</div>
+          </div>
+
+          <div class="stat bg2">
+            <h3>Đã điểm danh</h3>
+            <div class="num" id="daDiemDanh">0</div>
+          </div>
+
+          <div class="stat bg3">
+            <h3>Chưa điểm danh</h3>
+            <div class="num" id="chuaDiemDanh">0</div>
+          </div>
+
+          <div class="stat bg4">
+            <h3>Tỷ lệ hoàn thành</h3>
+            <div class="num" id="tyLe">0%</div>
+          </div>
+        </div>
+
+        <div class="section-title">Vừa quét gần nhất</div>
+        <div id="danhSachGanDay" class="list-box">
+          Chưa có dữ liệu
+        </div>
+
+        <div class="section-title">Chưa điểm danh</div>
+        <div id="danhSachChua" class="list-box">
+          Nhấn nút để tải danh sách
+        </div>
+      </div>
     </div>
   </div>
 
   <script>
-    // DÁN ĐƯỜNG DẪN APPS SCRIPT CỦA THẦY VÀO GIỮA HAI DẤU NGOẶC KÉP
-    const URL_APPS_SCRIPT =
-      "https://script.google.com/macros/s/AKfycbxt3lyP1-PRl9mMOH1o7v1sgIkXBnR51-Of-7Wurcc-NG88r8RO5H3eBFSiGhuh8T0B9A/exec";
+    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbx2VEp4wiqS_ny3_t8go4l4-1oSMPOW9sQlu2QoQCyHpKP0YZisApbvWGuI-U8ckd2f4A/exec";
 
+    let scanner = null;
     let dangXuLy = false;
     let maVuaQuet = "";
-    let scanner = null;
-    let scriptDangGui = null;
 
-    function hienThi(noiDung, lop) {
-      const ketQua = document.getElementById("ketQua");
-      ketQua.textContent = noiDung;
-      ketQua.className = lop || "";
+    function hienThiKetQua(noiDung, loai = "") {
+      const box = document.getElementById("ketQua");
+      box.textContent = noiDung;
+      box.className = "status-box " + loai;
     }
 
-    function xoaScriptDangGui() {
-      if (scriptDangGui) {
-        scriptDangGui.remove();
-        scriptDangGui = null;
-      }
+    function doiAnhNen() {
+      const url = document.getElementById("bgInput").value.trim();
+      if (!url) return;
+      document.body.style.backgroundImage =
+        `linear-gradient(rgba(15,23,42,0.45), rgba(15,23,42,0.45)), url('${url}')`;
     }
 
-    function moKhoaQuetSau(delay) {
-      setTimeout(function() {
-        dangXuLy = false;
-        maVuaQuet = "";
-        hienThi("Sẵn sàng quét mã QR", "");
+    function doiTieuDe() {
+      const tieuDe = document.getElementById("titleInput").value.trim();
+      if (!tieuDe) return;
+      document.getElementById("tieuDe").textContent = tieuDe;
+    }
 
-        // Bật lại camera
-        if (scanner) {
-          try {
-            scanner.resume();
-          } catch (loi) {
-            console.log("Không cần resume camera:", loi);
-          }
+    function jsonp(action, params = {}) {
+      return new Promise((resolve, reject) => {
+        const callbackName = "cb_" + Date.now() + "_" + Math.floor(Math.random() * 10000);
+        const script = document.createElement("script");
+
+        params.action = action;
+        params.callback = callbackName;
+
+        const query = new URLSearchParams(params).toString();
+        script.src = URL_APPS_SCRIPT + "?" + query;
+
+        window[callbackName] = function(data) {
+          resolve(data);
+          cleanup();
+        };
+
+        script.noscript = function() {
+          reject(new Error("Không kết nối được Apps Script"));
+          cleanup();
+        };
+
+        function cleanup() {
+          delete window[callbackName];
+          if (script.parentNode) script.parentNode.removeChild(script);
         }
-      }, delay);
+
+        document.body.appendChild(script);
+      });
     }
 
-    function guiMaQR(maQR) {
+    async function guiMaQR(maQR) {
       maQR = String(maQR || "").trim().toUpperCase();
 
-      if (!maQR) {
-        return;
-      }
-
-      // Chặn ngay từ trình duyệt
-      if (dangXuLy) {
-        return;
-      }
-
-      if (maQR === maVuaQuet) {
-        return;
-      }
+      if (!maQR) return;
+      if (dangXuLy) return;
+      if (maQR === maVuaQuet) return;
 
       dangXuLy = true;
       maVuaQuet = maQR;
 
-      // Dừng quét ngay sau lần nhận đầu tiên
-      if (scanner) {
-        try {
-          scanner.pause(true);
-        } catch (loi) {
-          console.log("Không thể pause camera:", loi);
-        }
-      }
-
-      hienThi("Đang kiểm tra mã: " + maQR, "vang");
-
-      const tenHam = "nhanKetQua_" + Date.now();
-
-      let daNhanKetQua = false;
-
-      window[tenHam] = function(ketQua) {
-        if (daNhanKetQua) {
-          return;
+      try {
+        if (scanner) {
+          try { scanner.pause(true); } catch(e) {}
         }
 
-        daNhanKetQua = true;
+        hienThiKetQua("Đang kiểm tra mã: " + maQR, "warning");
 
-        xoaScriptDangGui();
+        const ketQua = await jsonp("diemdanh", { maQR: maQR });
 
-        if (ketQua && ketQua.thanhCong) {
-          hienThi(
+        if (ketQua.thanhCong) {
+          hienThiKetQua(
             "✓ " + ketQua.hoTen +
             "\nLớp: " + ketQua.lop +
-            "\nĐiểm danh thành công",
-            "xanh"
+            "\n" + ketQua.thongBao,
+            "success"
           );
         } else {
-          hienThi(
-            "⚠ " + (ketQua.thongBao || "Không thể điểm danh"),
-            "do"
-          );
+          hienThiKetQua("⚠ " + ketQua.thongBao, "danger");
         }
 
-        delete window[tenHam];
+        await taiBaoCao();
 
-        // Chỉ mở lại sau 2,5 giây
-        moKhoaQuetSau(2500);
-      };
+      } catch (loi) {
+        hienThiKetQua("Lỗi kết nối dữ liệu", "danger");
+      }
 
-      scriptDangGui = document.createElement("script");
+      setTimeout(() => {
+        dangXuLy = false;
+        maVuaQuet = "";
 
-      scriptDangGui.src =
-        URL_APPS_SCRIPT +
-        "?maQR=" + encodeURIComponent(maQR) +
-        "&callback=" + encodeURIComponent(tenHam);
+        try {
+          if (scanner) scanner.resume();
+        } catch (e) {}
 
-      scriptDangGui.noscript = function() {
-        if (daNhanKetQua) {
-          return;
-        }
-
-        daNhanKetQua = true;
-
-        xoaScriptDangGui();
-        delete window[tenHam];
-
-        hienThi("Lỗi kết nối Google Sheets", "do");
-
-        // Mở lại camera sau 3 giây nếu có lỗi
-        moKhoaQuetSau(3000);
-      };
-
-      document.body.appendChild(scriptDangGui);
+        hienThiKetQua("Sẵn sàng quét mã QR");
+      }, 2500);
     }
 
-    function khiQuetThanhCong(maQR) {
-      guiMaQR(maQR);
+    async function taiBaoCao() {
+      try {
+        const thongKe = await jsonp("thongke");
+        if (thongKe.thanhCong) {
+          document.getElementById("tongHocSinh").textContent = thongKe.tongHocSinh;
+          document.getElementById("daDiemDanh").textContent = thongKe.daDiemDanh;
+          document.getElementById("chuaDiemDanh").textContent = thongKe.chuaDiemDanh;
+          document.getElementById("tyLe").textContent = thongKe.tyLe + "%";
+        }
+
+        const ganDay = await jsonp("ganday");
+        const box = document.getElementById("danhSachGanDay");
+
+        if (ganDay.thanhCong && ganDay.danhSach.length > 0) {
+          box.innerHTML = ganDay.danhSach.map(item => `
+            <div class="item">
+              <strong>${item.hoTen} - ${item.lop}</strong>
+              <div>Mã: ${item.maQR}</div>
+              <div>Thời gian: ${item.thoiGian}</div>
+            </div>
+          `).join("");
+        } else {
+          box.innerHTML = "Chưa có dữ liệu";
+        }
+
+      } catch (e) {
+        console.log(e);
+      }
+    }
+
+    async function taiDanhSachChuaDiemDanh() {
+      try {
+        const data = await jsonp("chuadiemdanh");
+        const box = document.getElementById("danhSachChua");
+
+        if (data.thanhCong && data.danhSach.length > 0) {
+          box.innerHTML = data.danhSach.map(item => `
+            <div class="item">
+              <strong>${item.hoTen}</strong>
+              <div>Lớp: ${item.lop}</div>
+              <div>Mã: ${item.maQR}</div>
+            </div>
+          `).join("");
+        } else {
+          box.innerHTML = "Tất cả đã điểm danh";
+        }
+      } catch (e) {
+        document.getElementById("danhSachChua").innerHTML = "Không tải được dữ liệu";
+      }
+    }
+
+    function khiQuetThanhCong(decodedText) {
+      guiMaQR(decodedText);
     }
 
     function khiQuetThatBai() {
-      // Không hiển thị lỗi liên tục khi camera chưa nhận diện được mã
     }
 
     scanner = new Html5QrcodeScanner(
       "reader",
       {
         fps: 10,
-        qrbox: {
-          width: 300,
-          height: 300
-        },
+        qrbox: { width: 280, height: 280 },
         rememberLastUsedCamera: true
       },
       false
     );
 
-    scanner.render(
-      khiQuetThanhCong,
-      khiQuetThatBai
-    );
-  </script>
+    scanner.render(khiQuetThanhCong, khiQuetThatBai);
 
+    taiBaoCao();
+  </script>
 </body>
 </html>
