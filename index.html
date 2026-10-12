@@ -1,22 +1,22 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hệ thống điểm danh QR</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <title>Điểm danh QR - Trường Tiểu học Hòa Ninh</title>
 
   <script src="https://unpkg.com/html5-qrcode"></script>
 
   <style>
     :root {
-      --primary: #2563eb;
-      --success: #16a34a;
-      --danger: #dc2626;
-      --warning: #d97706;
-      --text: #0f172a;
-      --card-bg: rgba(255, 255, 255, 0.92);
-      --overlay: rgba(15, 23, 42, 0.45);
-      --radius: 18px;
+      --mau-chu-dao: #087f5b;
+      --mau-phu: #0b6e4f;
+      --mau-thanh-cong: #198754;
+      --mau-loi: #dc3545;
+      --mau-canh-bao: #f59f00;
+      --nen-the: rgba(255, 255, 255, 0.96);
+      --chu: #17324d;
     }
 
     * {
@@ -25,351 +25,700 @@
 
     body {
       margin: 0;
-      font-family: Arial, sans-serif;
-      color: white;
-      background-image:
-        linear-gradient(var(--overlay), var(--overlay)),
-        url('https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1600&q=80');
+      min-height: 100vh;
+      font-family: Arial, Helvetica, sans-serif;
+      color: var(--chu);
+
+      background:
+        linear-gradient(
+          rgba(0, 45, 35, 0.50),
+          rgba(0, 45, 35, 0.50)
+        ),
+        url("https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1800&q=85");
+
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
-      min-height: 100vh;
     }
 
-    .wrapper {
-      max-width: 1400px;
+    .khung-chinh {
+      width: min(1450px, 100%);
       margin: 0 auto;
-      padding: 24px;
+      padding: 20px;
     }
 
-    .hero {
-      background: rgba(255,255,255,0.12);
-      backdrop-filter: blur(10px);
-      border-radius: 24px;
-      padding: 24px;
-      margin-bottom: 20px;
-      border: 1px solid rgba(255,255,255,0.18);
-    }
-
-    .hero h1 {
-      margin: 0 0 8px 0;
-      font-size: 34px;
-    }
-
-    .hero p {
-      margin: 0;
-      opacity: 0.95;
-      font-size: 16px;
-    }
-
-    .toolbar {
-      margin-top: 16px;
+    .dau-trang {
       display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
+      align-items: center;
+      gap: 18px;
+      padding: 20px;
+      border-radius: 22px;
+      color: white;
+      background: linear-gradient(
+        135deg,
+        rgba(7, 127, 91, 0.95),
+        rgba(12, 78, 58, 0.92)
+      );
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.20);
     }
 
-    .toolbar input {
-      padding: 10px 12px;
-      border-radius: 10px;
-      border: none;
-      min-width: 240px;
-    }
-
-    .toolbar button {
+    .logo {
+      width: 90px;
+      height: 90px;
+      object-fit: contain;
+      border-radius: 50%;
       background: white;
-      color: var(--primary);
+      padding: 5px;
+      border: 3px solid rgba(255,255,255,0.8);
+      flex-shrink: 0;
+    }
+
+    .tieu-de {
+      flex: 1;
+    }
+
+    .tieu-de h1 {
+      margin: 0;
+      font-size: clamp(24px, 4vw, 42px);
+      letter-spacing: 0.5px;
+    }
+
+    .tieu-de p {
+      margin: 8px 0 0;
+      font-size: 16px;
+      opacity: 0.95;
+    }
+
+    .nut-cai-dat {
       border: none;
-      border-radius: 10px;
-      padding: 10px 14px;
+      border-radius: 12px;
+      padding: 12px 16px;
+      background: white;
+      color: var(--mau-chu-dao);
       font-weight: bold;
       cursor: pointer;
+      white-space: nowrap;
     }
 
-    .main-grid {
+    .thanh-thong-tin {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 18px 0;
+      color: white;
+    }
+
+    .nhan-thong-tin {
+      padding: 10px 15px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.16);
+      backdrop-filter: blur(8px);
+    }
+
+    .bo-cuc {
       display: grid;
-      grid-template-columns: 1.2fr 0.8fr;
+      grid-template-columns: minmax(0, 1.1fr) minmax(350px, 0.9fr);
       gap: 20px;
     }
 
-    .card {
-      background: var(--card-bg);
-      color: var(--text);
-      border-radius: var(--radius);
-      padding: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.18);
+    .the {
+      background: var(--nen-the);
+      border-radius: 20px;
+      padding: 22px;
+      box-shadow: 0 12px 30px rgba(0,0,0,0.18);
     }
 
-    .card h2 {
-      margin-top: 0;
+    .the h2 {
+      margin: 0 0 16px;
+      color: var(--mau-chu-dao);
       font-size: 22px;
     }
 
     #reader {
       width: 100%;
-      max-width: 520px;
-      margin: 0 auto 16px auto;
+      max-width: 600px;
+      margin: 0 auto 18px;
       overflow: hidden;
       border-radius: 16px;
+      border: 3px solid #d8eee6;
     }
 
-    .status-box {
-      min-height: 88px;
+    .ket-qua {
+      min-height: 85px;
+      padding: 18px;
       border-radius: 14px;
-      padding: 16px;
-      font-size: 18px;
+      background: #edf2f7;
+      font-size: 19px;
       font-weight: bold;
       white-space: pre-line;
-      background: #e2e8f0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
     }
 
-    .success {
-      background: #dcfce7;
-      color: #166534;
+    .thanh-cong {
+      background: #d1fae5;
+      color: #047857;
     }
 
-    .danger {
+    .that-bai {
       background: #fee2e2;
-      color: #991b1b;
+      color: #b91c1c;
     }
 
-    .warning {
+    .canh-bao {
       background: #fef3c7;
       color: #92400e;
     }
 
-    .stats {
+    .thong-ke {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
       gap: 14px;
     }
 
-    .stat {
+    .o-thong-ke {
       border-radius: 16px;
-      padding: 18px;
       color: white;
+      padding: 18px;
+      min-height: 115px;
     }
 
-    .stat h3 {
-      margin: 0 0 8px 0;
+    .o-thong-ke h3 {
+      margin: 0 0 12px;
       font-size: 15px;
-      font-weight: 600;
     }
 
-    .stat .num {
-      font-size: 34px;
-      font-weight: 700;
+    .so-lieu {
+      font-size: 35px;
+      font-weight: bold;
     }
 
-    .bg1 { background: linear-gradient(135deg, #2563eb, #1d4ed8); }
-    .bg2 { background: linear-gradient(135deg, #16a34a, #15803d); }
-    .bg3 { background: linear-gradient(135deg, #dc2626, #b91c1c); }
-    .bg4 { background: linear-gradient(135deg, #7c3aed, #6d28d9); }
+    .tong {
+      background: linear-gradient(135deg, #1971c2, #1864ab);
+    }
 
-    .section-title {
-      margin: 18px 0 10px 0;
+    .da-diem-danh {
+      background: linear-gradient(135deg, #2f9e44, #087f5b);
+    }
+
+    .chua-diem-danh {
+      background: linear-gradient(135deg, #e03131, #c92a2a);
+    }
+
+    .ty-le {
+      background: linear-gradient(135deg, #7048e8, #5f3dc4);
+    }
+
+    .tieu-de-phu {
+      margin: 24px 0 10px;
+      color: var(--mau-chu-dao);
       font-size: 18px;
       font-weight: bold;
-      color: var(--text);
     }
 
-    .list-box {
-      max-height: 320px;
-      overflow: auto;
-      background: #f8fafc;
+    .danh-sach {
+      max-height: 260px;
+      overflow-y: auto;
+      border: 1px solid #dbe5ec;
       border-radius: 12px;
-      padding: 10px;
-      border: 1px solid #e2e8f0;
+      background: #f8fafc;
     }
 
-    .item {
+    .dong-hoc-sinh {
       padding: 12px;
-      border-bottom: 1px solid #e2e8f0;
+      border-bottom: 1px solid #e5e7eb;
     }
 
-    .item:last-child {
+    .dong-hoc-sinh:last-child {
       border-bottom: none;
     }
 
-    .item strong {
+    .dong-hoc-sinh strong {
       display: block;
       margin-bottom: 4px;
     }
 
-    .actions {
+    .nhom-nut {
       display: flex;
-      gap: 10px;
       flex-wrap: wrap;
-      margin-top: 16px;
+      gap: 10px;
+      margin-top: 18px;
     }
 
-    .actions button {
+    .nhom-nut button {
       border: none;
       border-radius: 10px;
-      padding: 10px 14px;
+      padding: 11px 14px;
       cursor: pointer;
       font-weight: bold;
     }
 
-    .btn-primary {
-      background: var(--primary);
+    .nut-xanh {
       color: white;
+      background: var(--mau-chu-dao);
     }
 
-    .btn-secondary {
+    .nut-xam {
+      color: #263238;
       background: #e2e8f0;
-      color: #0f172a;
     }
 
-    .footer-note {
-      margin-top: 12px;
+    .lop-phu {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0,0,0,0.55);
+      padding: 20px;
+      overflow-y: auto;
+    }
+
+    .hop-cai-dat {
+      width: min(650px, 100%);
+      margin: 30px auto;
+      padding: 24px;
+      border-radius: 20px;
+      background: white;
+      box-shadow: 0 15px 45px rgba(0,0,0,0.30);
+    }
+
+    .hop-cai-dat h2 {
+      margin-top: 0;
+      color: var(--mau-chu-dao);
+    }
+
+    .nhom-form {
+      margin: 15px 0;
+    }
+
+    .nhom-form label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: bold;
+    }
+
+    .nhom-form input[type="text"],
+    .nhom-form input[type="color"],
+    .nhom-form input[type="file"] {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #cbd5e1;
+      border-radius: 9px;
+      background: white;
+    }
+
+    .nhom-form input[type="color"] {
+      height: 46px;
+      padding: 3px;
+    }
+
+    .ghi-chu {
+      padding: 12px;
       color: #475569;
+      background: #f1f5f9;
+      border-radius: 10px;
       font-size: 14px;
+      line-height: 1.5;
     }
 
-    @media (max-width: 960px) {
-      .main-grid {
-        grid-template-columns: 1fr;
-      }
+    .chan-cai-dat {
+      display: flex;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 20px;
+    }
 
-      .stats {
-        grid-template-columns: 1fr 1fr;
+    .chan-cai-dat button {
+      border: none;
+      border-radius: 10px;
+      padding: 11px 16px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    @media (max-width: 900px) {
+      .bo-cuc {
+        grid-template-columns: 1fr;
       }
     }
 
-    @media (max-width: 640px) {
-      .stats {
-        grid-template-columns: 1fr;
+    @media (max-width: 600px) {
+      .khung-chinh {
+        padding: 10px;
       }
 
-      .hero h1 {
-        font-size: 26px;
+      .dau-trang {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .logo {
+        width: 75px;
+        height: 75px;
+      }
+
+      .nut-cai-dat {
+        width: 100%;
+      }
+
+      .thong-ke {
+        grid-template-columns: 1fr;
       }
     }
   </style>
 </head>
+
 <body>
-  <div class="wrapper">
-    <div class="hero">
-      <h1 id="tieuDe">HỆ THỐNG ĐIỂM DANH QR</h1>
-      <p id="moTa">Quét mã nhanh, quản lý chuyên nghiệp, dùng được cho nhiều mục đích.</p>
 
-      <div class="toolbar">
-        <input id="bgInput" type="text" placeholder="Dán link ảnh nền tại đây" />
-        <button noscript="doiAnhNen()">Đổi ảnh nền</button>
+  <div class="khung-chinh">
 
-        <input id="titleInput" type="text" placeholder="Nhập tiêu đề mới" />
-        <button noscript="doiTieuDe()">Đổi tiêu đề</button>
+    <header class="dau-trang">
+      <img id="logoTruong" class="logo"
+           src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Placeholder_view_vector.svg"
+           alt="Logo trường">
+
+      <div class="tieu-de">
+        <h1 id="tieuDe">HỆ THỐNG ĐIỂM DANH QR</h1>
+        <p id="moTa">Trường Tiểu học Hòa Ninh - Quản lý điểm danh nhanh chóng và chính xác</p>
+      </div>
+
+      <button class="nut-cai-dat" noscript="moCaiDat()">
+        ⚙ Cài đặt giao diện
+      </button>
+    </header>
+
+    <div class="thanh-thong-tin">
+      <div class="nhan-thong-tin">
+        📅 Ngày: <span id="ngayHienTai"></span>
+      </div>
+
+      <div class="nhan-thong-tin">
+        🟢 Trạng thái: <span id="trangThaiHeThong">Sẵn sàng</span>
       </div>
     </div>
 
-    <div class="main-grid">
-      <div class="card">
-        <h2>Quét mã QR</h2>
+    <main class="bo-cuc">
+
+      <section class="the">
+        <h2>📷 Quét mã QR</h2>
+
         <div id="reader"></div>
 
-        <div id="ketQua" class="status-box">
+        <div id="ketQua" class="ket-qua">
           Sẵn sàng quét mã QR
         </div>
 
-        <div class="actions">
-          <button class="btn-primary" noscript="taiBaoCao()">Làm mới báo cáo</button>
-          <button class="btn-secondary" noscript="taiDanhSachChuaDiemDanh()">Xem danh sách chưa điểm danh</button>
+        <div class="nhom-nut">
+          <button class="nut-xanh" noscript="taiBaoCao()">
+            ↻ Làm mới báo cáo
+          </button>
+
+          <button class="nut-xam" noscript="taiDanhSachChuaDiemDanh()">
+            👥 Xem học sinh chưa điểm danh
+          </button>
         </div>
+      </section>
 
-        <div class="footer-note">
-          Có thể thay ảnh nền và tiêu đề để dùng cho lớp học, sự kiện, hội nghị, câu lạc bộ.
-        </div>
-      </div>
+      <section class="the">
+        <h2>📊 Báo cáo trong ngày</h2>
 
-      <div class="card">
-        <h2>Tổng hợp báo cáo</h2>
-
-        <div class="stats">
-          <div class="stat bg1">
+        <div class="thong-ke">
+          <div class="o-thong-ke tong">
             <h3>Tổng số học sinh</h3>
-            <div class="num" id="tongHocSinh">0</div>
+            <div id="tongHocSinh" class="so-lieu">0</div>
           </div>
 
-          <div class="stat bg2">
+          <div class="o-thong-ke da-diem-danh">
             <h3>Đã điểm danh</h3>
-            <div class="num" id="daDiemDanh">0</div>
+            <div id="daDiemDanh" class="so-lieu">0</div>
           </div>
 
-          <div class="stat bg3">
+          <div class="o-thong-ke chua-diem-danh">
             <h3>Chưa điểm danh</h3>
-            <div class="num" id="chuaDiemDanh">0</div>
+            <div id="chuaDiemDanh" class="so-lieu">0</div>
           </div>
 
-          <div class="stat bg4">
+          <div class="o-thong-ke ty-le">
             <h3>Tỷ lệ hoàn thành</h3>
-            <div class="num" id="tyLe">0%</div>
+            <div id="tyLe" class="so-lieu">0%</div>
           </div>
         </div>
 
-        <div class="section-title">Vừa quét gần nhất</div>
-        <div id="danhSachGanDay" class="list-box">
+        <div class="tieu-de-phu">Học sinh vừa điểm danh</div>
+        <div id="danhSachGanDay" class="danh-sach">
           Chưa có dữ liệu
         </div>
 
-        <div class="section-title">Chưa điểm danh</div>
-        <div id="danhSachChua" class="list-box">
+        <div class="tieu-de-phu">Học sinh chưa điểm danh</div>
+        <div id="danhSachChua" class="danh-sach">
           Nhấn nút để tải danh sách
         </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- HỘP CÀI ĐẶT -->
+  <div id="lopCaiDat" class="lop-phu">
+    <div class="hop-cai-dat">
+      <h2>⚙ Cài đặt giao diện</h2>
+
+      <div class="nhom-form">
+        <label for="nhapTieuDe">Tiêu đề hệ thống</label>
+        <input id="nhapTieuDe" type="text"
+               placeholder="Ví dụ: HỆ THỐNG ĐIỂM DANH QR">
+      </div>
+
+      <div class="nhom-form">
+        <label for="nhapMoTa">Mô tả bên dưới tiêu đề</label>
+        <input id="nhapMoTa" type="text"
+               placeholder="Ví dụ: Trường Tiểu học Hòa Ninh">
+      </div>
+
+      <div class="nhom-form">
+        <label for="nhapMau">Màu chủ đạo</label>
+        <input id="nhapMau" type="color" value="#087f5b">
+      </div>
+
+      <div class="nhom-form">
+        <label for="nhapLogo">Chọn logo từ máy tính</label>
+        <input id="nhapLogo" type="file" accept="image/*">
+      </div>
+
+      <div class="nhom-form">
+        <label for="nhapNen">Chọn hình nền từ máy tính</label>
+        <input id="nhapNen" type="file" accept="image/*">
+      </div>
+
+      <div class="ghi-chu">
+        Logo và ảnh nền được lưu trên trình duyệt của máy tính này.
+        Nếu mở trên máy khác, cần cài đặt lại giao diện.
+      </div>
+
+      <div class="chan-cai-dat">
+        <button class="nut-xam" noscript="dongCaiDat()">
+          Đóng
+        </button>
+
+        <button class="nut-xam" noscript="khoiPhucMacDinh()">
+          Khôi phục mặc định
+        </button>
+
+        <button class="nut-xanh" noscript="luuCaiDat()">
+          Lưu cài đặt
+        </button>
       </div>
     </div>
   </div>
 
   <script>
-    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbx2VEp4wiqS_ny3_t8go4l4-1oSMPOW9sQlu2QoQCyHpKP0YZisApbvWGuI-U8ckd2f4A/exec";
+    /*
+      THAY BẰNG LINK APPS SCRIPT CỦA THẦY
+    */
+    const URL_APPS_SCRIPT =
+      "DÁN_LINK_APPS_SCRIPT_VÀO_ĐÂY";
 
     let scanner = null;
     let dangXuLy = false;
     let maVuaQuet = "";
 
-    function hienThiKetQua(noiDung, loai = "") {
+    const CAI_DAT_MAC_DINH = {
+      tieuDe: "HỆ THỐNG ĐIỂM DANH QR",
+      moTa: "Trường Tiểu học Hòa Ninh - Quản lý điểm danh nhanh chóng và chính xác",
+      mau: "#087f5b",
+      logo: "",
+      nen: ""
+    };
+
+    function layCaiDat() {
+      try {
+        const duLieu = localStorage.getItem("caiDatGiaoDienQR");
+
+        if (!duLieu) {
+          return { ...CAI_DAT_MAC_DINH };
+        }
+
+        return {
+          ...CAI_DAT_MAC_DINH,
+          ...JSON.parse(duLieu)
+        };
+      } catch (loi) {
+        return { ...CAI_DAT_MAC_DINH };
+      }
+    }
+
+    function luuCaiDatVaoMay(caiDat) {
+      localStorage.setItem(
+        "caiDatGiaoDienQR",
+        JSON.stringify(caiDat)
+      );
+    }
+
+    function apDungCaiDat(caiDat) {
+      document.getElementById("tieuDe").textContent =
+        caiDat.tieuDe;
+
+      document.getElementById("moTa").textContent =
+        caiDat.moTa;
+
+      document.documentElement.style.setProperty(
+        "--mau-chu-dao",
+        caiDat.mau
+      );
+
+      if (caiDat.logo) {
+        document.getElementById("logoTruong").src =
+          caiDat.logo;
+      }
+
+      if (caiDat.nen) {
+        document.body.style.backgroundImage =
+          "linear-gradient(rgba(0,45,35,0.50), rgba(0,45,35,0.50)), url('" +
+          caiDat.nen +
+          "')";
+      }
+    }
+
+    function moCaiDat() {
+      const caiDat = layCaiDat();
+
+      document.getElementById("nhapTieuDe").value =
+        caiDat.tieuDe;
+
+      document.getElementById("nhapMoTa").value =
+        caiDat.moTa;
+
+      document.getElementById("nhapMau").value =
+        caiDat.mau;
+
+      document.getElementById("lopCaiDat").style.display =
+        "block";
+    }
+
+    function dongCaiDat() {
+      document.getElementById("lopCaiDat").style.display =
+        "none";
+    }
+
+    function docFileAnh(input) {
+      return new Promise(function(resolve) {
+        const file = input.files[0];
+
+        if (!file) {
+          resolve("");
+          return;
+        }
+
+        const reader = new FileReader();
+
+        reader.noscript = function(e) {
+          resolve(e.target.result);
+        };
+
+        reader.readAsDataURL(file);
+      });
+    }
+
+    async function luuCaiDat() {
+      const caiDatCu = layCaiDat();
+
+      const caiDatMoi = {
+        tieuDe:
+          document.getElementById("nhapTieuDe").value.trim() ||
+          caiDatCu.tieuDe,
+
+        moTa:
+          document.getElementById("nhapMoTa").value.trim() ||
+          caiDatCu.moTa,
+
+        mau:
+          document.getElementById("nhapMau").value ||
+          caiDatCu.mau,
+
+        logo: caiDatCu.logo,
+
+        nen: caiDatCu.nen
+      };
+
+      const logoMoi = await docFileAnh(
+        document.getElementById("nhapLogo")
+      );
+
+      const nenMoi = await docFileAnh(
+        document.getElementById("nhapNen")
+      );
+
+      if (logoMoi) {
+        caiDatMoi.logo = logoMoi;
+      }
+
+      if (nenMoi) {
+        caiDatMoi.nen = nenMoi;
+      }
+
+      try {
+        luuCaiDatVaoMay(caiDatMoi);
+        apDungCaiDat(caiDatMoi);
+        dongCaiDat();
+
+        alert("Đã lưu cài đặt giao diện trên máy này.");
+      } catch (loi) {
+        alert(
+          "Không thể lưu ảnh. Thầy hãy chọn ảnh có dung lượng nhỏ hơn."
+        );
+      }
+    }
+
+    function khoiPhucMacDinh() {
+      localStorage.removeItem("caiDatGiaoDienQR");
+      apDungCaiDat(CAI_DAT_MAC_DINH);
+      dongCaiDat();
+      alert("Đã khôi phục giao diện mặc định.");
+    }
+
+    function hienThiKetQua(noiDung, lop) {
       const box = document.getElementById("ketQua");
       box.textContent = noiDung;
-      box.className = "status-box " + loai;
-    }
-
-    function doiAnhNen() {
-      const url = document.getElementById("bgInput").value.trim();
-      if (!url) return;
-      document.body.style.backgroundImage =
-        `linear-gradient(rgba(15,23,42,0.45), rgba(15,23,42,0.45)), url('${url}')`;
-    }
-
-    function doiTieuDe() {
-      const tieuDe = document.getElementById("titleInput").value.trim();
-      if (!tieuDe) return;
-      document.getElementById("tieuDe").textContent = tieuDe;
+      box.className = "ket-qua " + (lop || "");
     }
 
     function jsonp(action, params = {}) {
-      return new Promise((resolve, reject) => {
-        const callbackName = "cb_" + Date.now() + "_" + Math.floor(Math.random() * 10000);
+      return new Promise(function(resolve, reject) {
+        const callbackName =
+          "cb_" + Date.now() + "_" +
+          Math.floor(Math.random() * 10000);
+
         const script = document.createElement("script");
 
         params.action = action;
         params.callback = callbackName;
 
-        const query = new URLSearchParams(params).toString();
-        script.src = URL_APPS_SCRIPT + "?" + query;
+        const query =
+          new URLSearchParams(params).toString();
+
+        script.src =
+          URL_APPS_SCRIPT + "?" + query;
 
         window[callbackName] = function(data) {
           resolve(data);
-          cleanup();
+          donDep();
         };
 
         script.noscript = function() {
           reject(new Error("Không kết nối được Apps Script"));
-          cleanup();
+          donDep();
         };
 
-        function cleanup() {
+        function donDep() {
           delete window[callbackName];
-          if (script.parentNode) script.parentNode.removeChild(script);
+
+          if (script.parentNode) {
+            script.parentNode.removeChild(script);
+          }
         }
 
         document.body.appendChild(script);
@@ -377,124 +726,193 @@
     }
 
     async function guiMaQR(maQR) {
-      maQR = String(maQR || "").trim().toUpperCase();
+      maQR = String(maQR || "")
+        .trim()
+        .toUpperCase();
 
-      if (!maQR) return;
-      if (dangXuLy) return;
-      if (maQR === maVuaQuet) return;
+      if (!maQR || dangXuLy || maQR === maVuaQuet) {
+        return;
+      }
 
       dangXuLy = true;
       maVuaQuet = maQR;
 
+      if (scanner) {
+        try {
+          scanner.pause(true);
+        } catch (loi) {}
+      }
+
+      hienThiKetQua(
+        "Đang kiểm tra mã: " + maQR,
+        "canh-bao"
+      );
+
       try {
-        if (scanner) {
-          try { scanner.pause(true); } catch(e) {}
-        }
-
-        hienThiKetQua("Đang kiểm tra mã: " + maQR, "warning");
-
-        const ketQua = await jsonp("diemdanh", { maQR: maQR });
+        const ketQua = await jsonp(
+          "diemdanh",
+          { maQR: maQR }
+        );
 
         if (ketQua.thanhCong) {
           hienThiKetQua(
             "✓ " + ketQua.hoTen +
             "\nLớp: " + ketQua.lop +
-            "\n" + ketQua.thongBao,
-            "success"
+            "\nĐiểm danh thành công",
+            "thanh-cong"
           );
         } else {
-          hienThiKetQua("⚠ " + ketQua.thongBao, "danger");
+          hienThiKetQua(
+            "⚠ " + ketQua.thongBao,
+            "that-bai"
+          );
         }
 
         await taiBaoCao();
 
       } catch (loi) {
-        hienThiKetQua("Lỗi kết nối dữ liệu", "danger");
+        hienThiKetQua(
+          "Lỗi kết nối Google Sheets",
+          "that-bai"
+        );
       }
 
-      setTimeout(() => {
+      setTimeout(function() {
         dangXuLy = false;
         maVuaQuet = "";
 
-        try {
-          if (scanner) scanner.resume();
-        } catch (e) {}
+        if (scanner) {
+          try {
+            scanner.resume();
+          } catch (loi) {}
+        }
 
-        hienThiKetQua("Sẵn sàng quét mã QR");
+        hienThiKetQua(
+          "Sẵn sàng quét mã QR",
+          ""
+        );
       }, 2500);
     }
 
     async function taiBaoCao() {
       try {
         const thongKe = await jsonp("thongke");
+
         if (thongKe.thanhCong) {
-          document.getElementById("tongHocSinh").textContent = thongKe.tongHocSinh;
-          document.getElementById("daDiemDanh").textContent = thongKe.daDiemDanh;
-          document.getElementById("chuaDiemDanh").textContent = thongKe.chuaDiemDanh;
-          document.getElementById("tyLe").textContent = thongKe.tyLe + "%";
+          document.getElementById("tongHocSinh").textContent =
+            thongKe.tongHocSinh;
+
+          document.getElementById("daDiemDanh").textContent =
+            thongKe.daDiemDanh;
+
+          document.getElementById("chuaDiemDanh").textContent =
+            thongKe.chuaDiemDanh;
+
+          document.getElementById("tyLe").textContent =
+            thongKe.tyLe + "%";
         }
 
         const ganDay = await jsonp("ganday");
         const box = document.getElementById("danhSachGanDay");
 
-        if (ganDay.thanhCong && ganDay.danhSach.length > 0) {
-          box.innerHTML = ganDay.danhSach.map(item => `
-            <div class="item">
-              <strong>${item.hoTen} - ${item.lop}</strong>
-              <div>Mã: ${item.maQR}</div>
-              <div>Thời gian: ${item.thoiGian}</div>
-            </div>
-          `).join("");
+        if (
+          ganDay.thanhCong &&
+          ganDay.danhSach &&
+          ganDay.danhSach.length > 0
+        ) {
+          box.innerHTML =
+            ganDay.danhSach.map(function(item) {
+              return `
+                <div class="dong-hoc-sinh">
+                  <strong>${item.hoTen} - ${item.lop}</strong>
+                  <div>Mã: ${item.maQR}</div>
+                  <div>Thời gian: ${item.thoiGian}</div>
+                </div>
+              `;
+            }).join("");
         } else {
-          box.innerHTML = "Chưa có dữ liệu";
+          box.textContent = "Chưa có dữ liệu";
         }
 
-      } catch (e) {
-        console.log(e);
+      } catch (loi) {
+        console.log(loi);
       }
     }
 
     async function taiDanhSachChuaDiemDanh() {
       try {
-        const data = await jsonp("chuadiemdanh");
-        const box = document.getElementById("danhSachChua");
+        const data =
+          await jsonp("chuadiemdanh");
 
-        if (data.thanhCong && data.danhSach.length > 0) {
-          box.innerHTML = data.danhSach.map(item => `
-            <div class="item">
-              <strong>${item.hoTen}</strong>
-              <div>Lớp: ${item.lop}</div>
-              <div>Mã: ${item.maQR}</div>
-            </div>
-          `).join("");
+        const box =
+          document.getElementById("danhSachChua");
+
+        if (
+          data.thanhCong &&
+          data.danhSach &&
+          data.danhSach.length > 0
+        ) {
+          box.innerHTML =
+            data.danhSach.map(function(item) {
+              return `
+                <div class="dong-hoc-sinh">
+                  <strong>${item.hoTen}</strong>
+                  <div>Lớp: ${item.lop}</div>
+                  <div>Mã: ${item.maQR}</div>
+                </div>
+              `;
+            }).join("");
         } else {
-          box.innerHTML = "Tất cả đã điểm danh";
+          box.textContent =
+            "Tất cả học sinh đã điểm danh";
         }
-      } catch (e) {
-        document.getElementById("danhSachChua").innerHTML = "Không tải được dữ liệu";
+
+      } catch (loi) {
+        document.getElementById("danhSachChua").textContent =
+          "Không tải được dữ liệu";
       }
     }
 
-    function khiQuetThanhCong(decodedText) {
-      guiMaQR(decodedText);
+    function khiQuetThanhCong(maQR) {
+      guiMaQR(maQR);
     }
 
-    function khiQuetThatBai() {
+    function khiQuetThatBai() {}
+
+    function hienThiNgay() {
+      const ngay = new Date();
+
+      document.getElementById("ngayHienTai").textContent =
+        ngay.toLocaleDateString("vi-VN");
     }
 
-    scanner = new Html5QrcodeScanner(
-      "reader",
-      {
-        fps: 10,
-        qrbox: { width: 280, height: 280 },
-        rememberLastUsedCamera: true
-      },
-      false
-    );
+    document.addEventListener("DOMContentLoaded", function() {
+      const caiDat = layCaiDat();
 
-    scanner.render(khiQuetThanhCong, khiQuetThatBai);
+      apDungCaiDat(caiDat);
+      hienThiNgay();
 
-    taiBaoCao();
+      scanner = new Html5QrcodeScanner(
+        "reader",
+        {
+          fps: 10,
+          qrbox: {
+            width: 300,
+            height: 300
+          },
+          rememberLastUsedCamera: true
+        },
+        false
+      );
+
+      scanner.render(
+        khiQuetThanhCong,
+        khiQuetThatBai
+      );
+
+      taiBaoCao();
+    });
   </script>
+
 </body>
 </html>
