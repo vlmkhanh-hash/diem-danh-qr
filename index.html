@@ -2,525 +2,2605 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <meta
+    name="description"
+    content="Hệ thống điểm danh học sinh bằng mã QR"
+  >
+
   <title>Điểm danh QR - Trường Tiểu học Hòa Ninh</title>
 
-  <script src="https://unpkg.com/html5-qrcode"></script>
+  <!-- Khóa phiên bản thư viện để tránh thay đổi ngoài ý muốn -->
+  <script
+    src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"
+    defer
+  ></script>
 
   <style>
     :root {
-      --mau-chu-dao: #087f5b;
-      --nen-the: rgba(255, 255, 255, 0.96);
-      --chu: #17324d;
+      --primary: #087f5b;
+      --primary-dark: #065f46;
+      --success: #15803d;
+      --danger: #b91c1c;
+      --warning: #b45309;
+      --text: #17324d;
+      --muted: #64748b;
+      --border: #dbe5ec;
+      --card: rgba(255, 255, 255, 0.97);
+      --shadow: 0 15px 35px rgba(0, 0, 0, 0.18);
     }
 
-    * { box-sizing: border-box; }
+    * {
+      box-sizing: border-box;
+    }
+
+    [hidden] {
+      display: none !important;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
 
     body {
       margin: 0;
       min-height: 100vh;
       font-family: Arial, Helvetica, sans-serif;
-      color: var(--chu);
-      background:
-        linear-gradient(rgba(0,45,35,0.50), rgba(0,45,35,0.50)),
-        url("https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1800&q=85");
+      color: var(--text);
+
+      background-color: #064e3b;
+      background-image:
+        radial-gradient(
+          circle at 20% 20%,
+          rgba(255, 255, 255, 0.14),
+          transparent 32%
+        ),
+        radial-gradient(
+          circle at 80% 10%,
+          rgba(59, 130, 246, 0.22),
+          transparent 30%
+        ),
+        linear-gradient(
+          135deg,
+          #064e3b,
+          #087f5b 48%,
+          #0f766e
+        );
+
       background-size: cover;
       background-position: center;
       background-attachment: fixed;
     }
 
-    .khung-chinh { width: min(1450px, 100%); margin: 0 auto; padding: 20px; }
-
-    .dau-trang {
-      display: flex; align-items: center; gap: 18px; padding: 20px;
-      border-radius: 22px; color: white;
-      background: linear-gradient(135deg, rgba(7,127,91,0.95), rgba(12,78,58,0.92));
-      box-shadow: 0 12px 30px rgba(0,0,0,0.20);
+    body.modal-open {
+      overflow: hidden;
     }
 
-    .logo {
-      width: 90px; height: 90px; object-fit: contain; border-radius: 50%;
-      background: white; padding: 5px; border: 3px solid rgba(255,255,255,0.8);
+    button,
+    input {
+      font: inherit;
+    }
+
+    button {
+      touch-action: manipulation;
+    }
+
+    .app {
+      width: min(1450px, 100%);
+      margin: 0 auto;
+      padding: 20px;
+    }
+
+    .header {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 22px;
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: 24px;
+      background:
+        linear-gradient(
+          135deg,
+          color-mix(in srgb, var(--primary) 94%, black),
+          color-mix(in srgb, var(--primary) 72%, #0f172a)
+        );
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .header::after {
+      content: "";
+      position: absolute;
+      width: 230px;
+      height: 230px;
+      right: -80px;
+      top: -100px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.08);
+      pointer-events: none;
+    }
+
+    .school-logo {
+      position: relative;
+      z-index: 1;
+      width: 96px;
+      height: 96px;
+      flex: 0 0 96px;
+      object-fit: contain;
+      padding: 5px;
+      border-radius: 50%;
+      border: 3px solid rgba(255, 255, 255, 0.9);
+      background: white;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.18);
+    }
+
+    .header-content {
+      position: relative;
+      z-index: 1;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .header-content h1 {
+      margin: 0;
+      font-size: clamp(25px, 4vw, 42px);
+      line-height: 1.15;
+      word-break: break-word;
+    }
+
+    .header-content p {
+      margin: 9px 0 0;
+      font-size: 16px;
+      line-height: 1.5;
+      opacity: 0.95;
+    }
+
+    .settings-button {
+      position: relative;
+      z-index: 2;
       flex-shrink: 0;
+      padding: 12px 17px;
+      color: var(--primary);
+      font-weight: 700;
+      border: 0;
+      border-radius: 12px;
+      background: white;
+      cursor: pointer;
+      box-shadow: 0 5px 14px rgba(0, 0, 0, 0.16);
+      transition:
+        transform 0.15s ease,
+        box-shadow 0.15s ease;
     }
 
-    .tieu-de { flex: 1; }
-    .tieu-de h1 { margin: 0; font-size: clamp(24px, 4vw, 42px); letter-spacing: 0.5px; }
-    .tieu-de p { margin: 8px 0 0; font-size: 16px; opacity: 0.95; }
-
-    .nut-cai-dat {
-      border: none; border-radius: 12px; padding: 12px 16px;
-      background: white; color: var(--mau-chu-dao); font-weight: bold;
-      cursor: pointer; white-space: nowrap;
+    .settings-button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     }
 
-    .thanh-thong-tin {
-      display: flex; justify-content: space-between; flex-wrap: wrap;
-      gap: 10px; margin: 18px 0; color: white;
+    .settings-button:active {
+      transform: translateY(1px);
     }
 
-    .nhan-thong-tin {
-      padding: 10px 15px; border-radius: 12px;
-      background: rgba(255,255,255,0.16); backdrop-filter: blur(8px);
+    .settings-button:focus-visible,
+    button:focus-visible,
+    input:focus-visible {
+      outline: 3px solid rgba(59, 130, 246, 0.45);
+      outline-offset: 2px;
     }
 
-    .bo-cuc {
-      display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(350px, 0.9fr); gap: 20px;
+    .information-bar {
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 18px 0;
     }
 
-    .the {
-      background: var(--nen-the); border-radius: 20px; padding: 22px;
-      box-shadow: 0 12px 30px rgba(0,0,0,0.18);
+    .information-label {
+      padding: 10px 15px;
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.14);
+      backdrop-filter: blur(8px);
     }
 
-    .the h2 { margin: 0 0 16px; color: var(--mau-chu-dao); font-size: 22px; }
+    .system-state {
+      font-weight: 700;
+    }
+
+    .layout {
+      display: grid;
+      grid-template-columns:
+        minmax(0, 1.08fr)
+        minmax(360px, 0.92fr);
+      gap: 20px;
+    }
+
+    .card {
+      min-width: 0;
+      padding: 22px;
+      border-radius: 21px;
+      background: var(--card);
+      box-shadow: var(--shadow);
+    }
+
+    .card-title {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin: 0 0 17px;
+      color: var(--primary);
+      font-size: 22px;
+    }
 
     #reader {
-      width: 100%; max-width: 600px; margin: 0 auto 18px;
-      overflow: hidden; border-radius: 16px; border: 3px solid #d8eee6;
+      width: 100%;
+      max-width: 610px;
+      min-height: 190px;
+      margin: 0 auto 18px;
+      overflow: hidden;
+      border: 3px solid
+        color-mix(in srgb, var(--primary) 28%, white);
+      border-radius: 17px;
+      background: white;
     }
 
-    .ket-qua {
-      min-height: 85px; padding: 18px; border-radius: 14px; background: #edf2f7;
-      font-size: 19px; font-weight: bold; white-space: pre-line;
-      display: flex; align-items: center; justify-content: center; text-align: center;
+    #reader video {
+      border-radius: 12px;
     }
 
-    .thanh-cong { background: #d1fae5; color: #047857; }
-    .that-bai { background: #fee2e2; color: #b91c1c; }
-    .canh-bao { background: #fef3c7; color: #92400e; }
-
-    .thong-ke { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
-
-    .o-thong-ke { border-radius: 16px; color: white; padding: 18px; min-height: 115px; }
-    .o-thong-ke h3 { margin: 0 0 12px; font-size: 15px; }
-    .so-lieu { font-size: 35px; font-weight: bold; }
-
-    .tong { background: linear-gradient(135deg, #1971c2, #1864ab); }
-    .da-diem-danh { background: linear-gradient(135deg, #2f9e44, #087f5b); }
-    .chua-diem-danh { background: linear-gradient(135deg, #e03131, #c92a2a); }
-    .ty-le { background: linear-gradient(135deg, #7048e8, #5f3dc4); }
-
-    .tieu-de-phu { margin: 24px 0 10px; color: var(--mau-chu-dao); font-size: 18px; font-weight: bold; }
-
-    .danh-sach {
-      max-height: 260px; overflow-y: auto; border: 1px solid #dbe5ec;
-      border-radius: 12px; background: #f8fafc;
+    #reader button {
+      padding: 9px 12px;
+      color: white;
+      border: 0;
+      border-radius: 8px;
+      background: var(--primary);
+      cursor: pointer;
     }
 
-    .dong-hoc-sinh { padding: 12px; border-bottom: 1px solid #e5e7eb; }
-    .dong-hoc-sinh:last-child { border-bottom: none; }
-    .dong-hoc-sinh strong { display: block; margin-bottom: 4px; }
-
-    .nhom-nut { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 18px; }
-    .nhom-nut button { border: none; border-radius: 10px; padding: 11px 14px; cursor: pointer; font-weight: bold; }
-    .nut-xanh { color: white; background: var(--mau-chu-dao); }
-    .nut-xam { color: #263238; background: #e2e8f0; }
-
-    .lop-phu {
-      display: none; position: fixed; inset: 0; z-index: 9999;
-      background: rgba(0,0,0,0.6); padding: 20px; overflow-y: auto;
+    #reader select {
+      max-width: 100%;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
     }
 
-    .hop-cai-dat {
-      width: min(650px, 100%); margin: 30px auto; padding: 24px;
-      border-radius: 20px; background: white; box-shadow: 0 15px 45px rgba(0,0,0,0.30);
+    .result-box {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 92px;
+      padding: 18px;
+      text-align: center;
+      white-space: pre-line;
+      font-size: 19px;
+      font-weight: 700;
+      line-height: 1.55;
+      border: 1px solid #dce4ec;
+      border-radius: 15px;
+      background: #edf2f7;
     }
 
-    .hop-cai-dat h2 { margin-top: 0; color: var(--mau-chu-dao); }
-
-    .nhom-form { margin: 15px 0; }
-    .nhom-form label { display: block; margin-bottom: 6px; font-weight: bold; }
-    .nhom-form input[type="text"],
-    .nhom-form input[type="color"],
-    .nhom-form input[type="file"] {
-      width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 9px; background: white;
-    }
-    .nhom-form input[type="color"] { height: 46px; padding: 3px; }
-
-    .ghi-chu {
-      padding: 12px; color: #475569; background: #f1f5f9;
-      border-radius: 10px; font-size: 14px; line-height: 1.5;
+    .result-success {
+      color: #166534;
+      border-color: #86efac;
+      background: #dcfce7;
     }
 
-    .chan-cai-dat { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 10px; margin-top: 20px; }
-    .chan-cai-dat button { border: none; border-radius: 10px; padding: 11px 16px; cursor: pointer; font-weight: bold; }
+    .result-error {
+      color: #991b1b;
+      border-color: #fca5a5;
+      background: #fee2e2;
+    }
 
-    @media (max-width: 900px) { .bo-cuc { grid-template-columns: 1fr; } }
+    .result-warning {
+      color: #92400e;
+      border-color: #fcd34d;
+      background: #fef3c7;
+    }
 
-    @media (max-width: 600px) {
-      .khung-chinh { padding: 10px; }
-      .dau-trang { align-items: flex-start; flex-direction: column; }
-      .logo { width: 75px; height: 75px; }
-      .nut-cai-dat { width: 100%; }
-      .thong-ke { grid-template-columns: 1fr; }
+    .button-group {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .button {
+      min-height: 43px;
+      padding: 11px 15px;
+      font-weight: 700;
+      border: 0;
+      border-radius: 10px;
+      cursor: pointer;
+      transition:
+        opacity 0.15s ease,
+        transform 0.15s ease;
+    }
+
+    .button:hover:not(:disabled) {
+      transform: translateY(-1px);
+    }
+
+    .button:disabled {
+      opacity: 0.58;
+      cursor: not-allowed;
+    }
+
+    .button-primary {
+      color: white;
+      background: var(--primary);
+    }
+
+    .button-secondary {
+      color: #263238;
+      background: #e2e8f0;
+    }
+
+    .button-danger {
+      color: #991b1b;
+      background: #fee2e2;
+    }
+
+    .statistics {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .statistic {
+      min-height: 118px;
+      padding: 18px;
+      color: white;
+      border-radius: 17px;
+      box-shadow: 0 7px 18px rgba(15, 23, 42, 0.12);
+    }
+
+    .statistic h3 {
+      margin: 0 0 12px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .statistic-number {
+      font-size: 36px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .statistic-total {
+      background: linear-gradient(135deg, #1971c2, #1864ab);
+    }
+
+    .statistic-present {
+      background: linear-gradient(135deg, #2f9e44, #087f5b);
+    }
+
+    .statistic-absent {
+      background: linear-gradient(135deg, #e03131, #c92a2a);
+    }
+
+    .statistic-rate {
+      background: linear-gradient(135deg, #7048e8, #5f3dc4);
+    }
+
+    .subheading {
+      margin: 23px 0 10px;
+      color: var(--primary);
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .student-list {
+      min-height: 52px;
+      max-height: 280px;
+      overflow-y: auto;
+      border: 1px solid var(--border);
+      border-radius: 13px;
+      background: #f8fafc;
+    }
+
+    .student-row {
+      padding: 12px 13px;
+      border-bottom: 1px solid #e5e7eb;
+      line-height: 1.55;
+    }
+
+    .student-row:last-child {
+      border-bottom: 0;
+    }
+
+    .student-row strong {
+      display: block;
+      margin-bottom: 2px;
+      color: #0f172a;
+    }
+
+    .student-meta {
+      color: #475569;
+      font-size: 14px;
+    }
+
+    .empty-message {
+      padding: 17px;
+      color: var(--muted);
+      text-align: center;
+    }
+
+    /* Hộp cài đặt */
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 99999;
+      display: flex;
+      align-items: flex-start;
+      justify-content: center;
+      padding: 25px 18px;
+      overflow-y: auto;
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(4px);
+    }
+
+    .settings-dialog {
+      width: min(690px, 100%);
+      margin: auto;
+      overflow: hidden;
+      border-radius: 21px;
+      background: white;
+      box-shadow: 0 22px 70px rgba(0, 0, 0, 0.4);
+      animation: showDialog 0.18s ease;
+    }
+
+    @keyframes showDialog {
+      from {
+        opacity: 0;
+        transform: translateY(-12px) scale(0.98);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .settings-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 15px;
+      padding: 20px 22px;
+      color: white;
+      background: var(--primary);
+    }
+
+    .settings-header h2 {
+      margin: 0;
+      font-size: 22px;
+    }
+
+    .close-button {
+      width: 40px;
+      height: 40px;
+      flex: 0 0 40px;
+      color: white;
+      font-size: 25px;
+      line-height: 1;
+      border: 0;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.16);
+      cursor: pointer;
+    }
+
+    .settings-body {
+      padding: 22px;
+    }
+
+    .form-group {
+      margin-bottom: 17px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 7px;
+      color: #1e293b;
+      font-weight: 700;
+    }
+
+    .form-group input[type="text"],
+    .form-group input[type="file"],
+    .form-group input[type="color"] {
+      width: 100%;
+      min-height: 45px;
+      padding: 10px 11px;
+      color: #0f172a;
+      border: 1px solid #cbd5e1;
+      border-radius: 9px;
+      background: white;
+    }
+
+    .form-group input[type="color"] {
+      padding: 4px;
+      cursor: pointer;
+    }
+
+    .file-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+      margin-top: 9px;
+    }
+
+    .file-note {
+      margin-top: 7px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .selection-state {
+      margin-top: 7px;
+      color: var(--primary);
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .settings-note {
+      margin: 5px 0 18px;
+      padding: 13px;
+      color: #475569;
+      font-size: 14px;
+      line-height: 1.55;
+      border-left: 4px solid var(--primary);
+      border-radius: 8px;
+      background: #f1f5f9;
+    }
+
+    .settings-error {
+      margin-bottom: 15px;
+      padding: 12px;
+      color: #991b1b;
+      border: 1px solid #fecaca;
+      border-radius: 9px;
+      background: #fef2f2;
+    }
+
+    .settings-footer {
+      display: flex;
+      justify-content: flex-end;
+      flex-wrap: wrap;
+      gap: 10px;
+      padding: 17px 22px;
+      border-top: 1px solid #e2e8f0;
+      background: #f8fafc;
+    }
+
+    /* Thông báo nhỏ */
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      z-index: 100000;
+      max-width: min(390px, calc(100vw - 36px));
+      padding: 14px 17px;
+      color: white;
+      line-height: 1.5;
+      border-radius: 12px;
+      background: #0f172a;
+      box-shadow: 0 12px 35px rgba(0, 0, 0, 0.28);
+      animation: toastIn 0.18s ease;
+    }
+
+    .toast-success {
+      background: #166534;
+    }
+
+    .toast-error {
+      background: #991b1b;
+    }
+
+    @keyframes toastIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @media (max-width: 960px) {
+      .layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 700px) {
+      .app {
+        padding: 10px;
+      }
+
+      .header {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 18px;
+      }
+
+      .school-logo {
+        width: 78px;
+        height: 78px;
+        flex-basis: 78px;
+      }
+
+      .settings-button {
+        width: 100%;
+      }
+
+      .statistics {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .statistics {
+        grid-template-columns: 1fr;
+      }
+
+      .settings-footer {
+        flex-direction: column-reverse;
+      }
+
+      .settings-footer .button {
+        width: 100%;
+      }
     }
   </style>
 </head>
 
 <body>
+  <div class="app">
 
-  <div class="khung-chinh">
+    <header class="header">
+      <img
+        id="schoolLogo"
+        class="school-logo"
+        alt="Logo trường"
+      >
 
-    <header class="dau-trang">
-      <img id="logoTruong" class="logo"
-           src="https://upload.wikimedia.org/wikipedia/commons/3/3f/Placeholder_view_vector.svg"
-           alt="Logo trường">
+      <div class="header-content">
+        <h1 id="mainTitle">
+          HỆ THỐNG ĐIỂM DANH QR
+        </h1>
 
-      <div class="tieu-de">
-        <h1 id="tieuDe">HỆ THỐNG ĐIỂM DANH QR</h1>
-        <p id="moTa">Trường Tiểu học Hòa Ninh - Quản lý điểm danh nhanh chóng và chính xác</p>
+        <p id="mainDescription">
+          Trường Tiểu học Hòa Ninh - Quản lý điểm danh nhanh chóng và chính xác
+        </p>
       </div>
 
-      <button id="nutMoCaiDat" class="nut-cai-dat" type="button">
+      <button
+        id="openSettingsButton"
+        class="settings-button"
+        type="button"
+      >
         ⚙ Cài đặt giao diện
       </button>
     </header>
 
-    <div class="thanh-thong-tin">
-      <div class="nhan-thong-tin">📅 Ngày: <span id="ngayHienTai"></span></div>
-      <div class="nhan-thong-tin">🟢 Trạng thái: <span id="trangThaiHeThong">Sẵn sàng</span></div>
+    <div class="information-bar">
+      <div class="information-label">
+        📅 Ngày:
+        <span id="currentDate"></span>
+      </div>
+
+      <div class="information-label">
+        ● Trạng thái:
+        <span id="systemState" class="system-state">
+          Đang khởi tạo
+        </span>
+      </div>
     </div>
 
-    <main class="bo-cuc">
+    <main class="layout">
 
-      <section class="the">
-        <h2>📷 Quét mã QR</h2>
+      <section class="card">
+        <h2 class="card-title">
+          📷 Quét mã QR
+        </h2>
+
         <div id="reader"></div>
 
-        <div id="ketQua" class="ket-qua">Sẵn sàng quét mã QR</div>
+        <div id="scanResult" class="result-box">
+          Đang khởi tạo camera...
+        </div>
 
-        <div class="nhom-nut">
-          <button id="nutLamMoi" class="nut-xanh" type="button">↻ Làm mới báo cáo</button>
-          <button id="nutXemChua" class="nut-xam" type="button">👥 Xem học sinh chưa điểm danh</button>
+        <div class="button-group">
+          <button
+            id="refreshReportButton"
+            class="button button-primary"
+            type="button"
+          >
+            ↻ Làm mới báo cáo
+          </button>
+
+          <button
+            id="loadAbsentButton"
+            class="button button-secondary"
+            type="button"
+          >
+            👥 Xem học sinh chưa điểm danh
+          </button>
         </div>
       </section>
 
-      <section class="the">
-        <h2>📊 Báo cáo trong ngày</h2>
+      <section class="card">
+        <h2 class="card-title">
+          📊 Báo cáo trong ngày
+        </h2>
 
-        <div class="thong-ke">
-          <div class="o-thong-ke tong">
+        <div class="statistics">
+
+          <div class="statistic statistic-total">
             <h3>Tổng số học sinh</h3>
-            <div id="tongHocSinh" class="so-lieu">0</div>
+            <div id="totalStudents" class="statistic-number">
+              0
+            </div>
           </div>
-          <div class="o-thong-ke da-diem-danh">
+
+          <div class="statistic statistic-present">
             <h3>Đã điểm danh</h3>
-            <div id="daDiemDanh" class="so-lieu">0</div>
+            <div id="presentStudents" class="statistic-number">
+              0
+            </div>
           </div>
-          <div class="o-thong-ke chua-diem-danh">
+
+          <div class="statistic statistic-absent">
             <h3>Chưa điểm danh</h3>
-            <div id="chuaDiemDanh" class="so-lieu">0</div>
+            <div id="absentStudents" class="statistic-number">
+              0
+            </div>
           </div>
-          <div class="o-thong-ke ty-le">
+
+          <div class="statistic statistic-rate">
             <h3>Tỷ lệ hoàn thành</h3>
-            <div id="tyLe" class="so-lieu">0%</div>
+            <div id="attendanceRate" class="statistic-number">
+              0%
+            </div>
+          </div>
+
+        </div>
+
+        <div class="subheading">
+          Học sinh vừa điểm danh
+        </div>
+
+        <div id="recentList" class="student-list">
+          <div class="empty-message">
+            Chưa có dữ liệu
           </div>
         </div>
 
-        <div class="tieu-de-phu">Học sinh vừa điểm danh</div>
-        <div id="danhSachGanDay" class="danh-sach">Chưa có dữ liệu</div>
+        <div class="subheading">
+          Học sinh chưa điểm danh
+        </div>
 
-        <div class="tieu-de-phu">Học sinh chưa điểm danh</div>
-        <div id="danhSachChua" class="danh-sach">Nhấn nút để tải danh sách</div>
+        <div id="absentList" class="student-list">
+          <div class="empty-message">
+            Nhấn nút để tải danh sách
+          </div>
+        </div>
       </section>
 
     </main>
   </div>
 
   <!-- HỘP CÀI ĐẶT -->
-  <div id="lopCaiDat" class="lop-phu">
-    <div class="hop-cai-dat">
-      <h2>⚙ Cài đặt giao diện</h2>
 
-      <div class="nhom-form">
-        <label for="nhapTieuDe">Tiêu đề hệ thống</label>
-        <input id="nhapTieuDe" type="text" placeholder="Ví dụ: HỆ THỐNG ĐIỂM DANH QR">
+  <div
+    id="settingsOverlay"
+    class="modal-overlay"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="settingsTitle"
+    hidden
+  >
+    <div class="settings-dialog">
+
+      <div class="settings-header">
+        <h2 id="settingsTitle">
+          ⚙ Cài đặt giao diện
+        </h2>
+
+        <button
+          id="closeSettingsXButton"
+          class="close-button"
+          type="button"
+          aria-label="Đóng"
+        >
+          ×
+        </button>
       </div>
 
-      <div class="nhom-form">
-        <label for="nhapMoTa">Mô tả bên dưới tiêu đề</label>
-        <input id="nhapMoTa" type="text" placeholder="Ví dụ: Trường Tiểu học Hòa Ninh">
+      <div class="settings-body">
+
+        <div
+          id="settingsError"
+          class="settings-error"
+          hidden
+        ></div>
+
+        <div class="form-group">
+          <label for="titleInput">
+            Tiêu đề hệ thống
+          </label>
+
+          <input
+            id="titleInput"
+            type="text"
+            maxlength="100"
+            placeholder="HỆ THỐNG ĐIỂM DANH QR"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="descriptionInput">
+            Nội dung mô tả
+          </label>
+
+          <input
+            id="descriptionInput"
+            type="text"
+            maxlength="180"
+            placeholder="Trường Tiểu học Hòa Ninh"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="primaryColorInput">
+            Màu chủ đạo
+          </label>
+
+          <input
+            id="primaryColorInput"
+            type="color"
+            value="#087f5b"
+          >
+        </div>
+
+        <div class="form-group">
+          <label for="logoInput">
+            Logo trường
+          </label>
+
+          <input
+            id="logoInput"
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+          >
+
+          <div class="file-actions">
+            <button
+              id="removeLogoButton"
+              class="button button-danger"
+              type="button"
+            >
+              Xóa logo đã lưu
+            </button>
+          </div>
+
+          <div class="file-note">
+            Logo sẽ được tự động thu nhỏ tối đa 512 x 512 pixel.
+          </div>
+
+          <div
+            id="logoSelectionState"
+            class="selection-state"
+          ></div>
+        </div>
+
+        <div class="form-group">
+          <label for="backgroundInput">
+            Hình nền
+          </label>
+
+          <input
+            id="backgroundInput"
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+          >
+
+          <div class="file-actions">
+            <button
+              id="removeBackgroundButton"
+              class="button button-danger"
+              type="button"
+            >
+              Xóa hình nền đã lưu
+            </button>
+          </div>
+
+          <div class="file-note">
+            Hình nền được tự động thu nhỏ và nén để tránh lỗi dung lượng.
+          </div>
+
+          <div
+            id="backgroundSelectionState"
+            class="selection-state"
+          ></div>
+        </div>
+
+        <div class="settings-note">
+          Tiêu đề và màu sắc được lưu riêng. Logo và hình nền được lưu bằng
+          IndexedDB, không lưu ảnh dung lượng lớn trực tiếp vào localStorage.
+          Cài đặt được giữ trên trình duyệt và máy tính đang sử dụng.
+        </div>
+
       </div>
 
-      <div class="nhom-form">
-        <label for="nhapMau">Màu chủ đạo</label>
-        <input id="nhapMau" type="color" value="#087f5b">
+      <div class="settings-footer">
+        <button
+          id="restoreDefaultsButton"
+          class="button button-danger"
+          type="button"
+        >
+          Khôi phục mặc định
+        </button>
+
+        <button
+          id="closeSettingsButton"
+          class="button button-secondary"
+          type="button"
+        >
+          Đóng
+        </button>
+
+        <button
+          id="saveSettingsButton"
+          class="button button-primary"
+          type="button"
+        >
+          Lưu cài đặt
+        </button>
       </div>
 
-      <div class="nhom-form">
-        <label for="nhapLogo">Chọn logo từ máy tính</label>
-        <input id="nhapLogo" type="file" accept="image/*">
-      </div>
-
-      <div class="nhom-form">
-        <label for="nhapNen">Chọn hình nền từ máy tính</label>
-        <input id="nhapNen" type="file" accept="image/*">
-      </div>
-
-      <div class="ghi-chu">
-        Logo và ảnh nền được lưu trên trình duyệt của máy tính này.
-        Nếu mở trên máy khác, cần cài đặt lại giao diện.
-      </div>
-
-      <div class="chan-cai-dat">
-        <button id="nutDongCaiDat" class="nut-xam" type="button">Đóng</button>
-        <button id="nutKhoiPhuc" class="nut-xam" type="button">Khôi phục mặc định</button>
-        <button id="nutLuuCaiDat" class="nut-xanh" type="button">Lưu cài đặt</button>
-      </div>
     </div>
   </div>
 
+  <div
+    id="toast"
+    class="toast"
+    role="status"
+    aria-live="polite"
+    hidden
+  ></div>
+
   <script>
-    // THAY BẰNG LINK APPS SCRIPT CỦA THẦY (kết thúc bằng /exec)
-    const URL_APPS_SCRIPT = "https://script.google.com/macros/s/AKfycbyMc1rCy39RKz9RYKSBqpTdyuzQdx-S0q9TAWddFvThg-tHZcohOch28pFqrbhbDUcD2g/exec";
+    "use strict";
 
+    /*
+      =====================================================
+      1. CẤU HÌNH QUAN TRỌNG
+      =====================================================
+
+      Thay nội dung bên dưới bằng đường dẫn Apps Script thật.
+      Đường dẫn phải kết thúc bằng /exec.
+    */
+
+    const URL_APPS_SCRIPT =
+      "https://script.google.com/macros/s/AKfycbyMc1rCy39RKz9RYKSBqpTdyuzQdx-S0q9TAWddFvThg-tHZcohOch28pFqrbhbDUcD2g/exec";
+
+    /*
+      =====================================================
+      2. HẰNG SỐ VÀ TRẠNG THÁI
+      =====================================================
+    */
+
+    const SETTINGS_KEY = "hoaNinhQrSettingsV3";
+
+    const DB_NAME = "HoaNinhQrInterface";
+    const DB_VERSION = 1;
+    const IMAGE_STORE = "images";
+
+    const IMAGE_KEY_LOGO = "schoolLogo";
+    const IMAGE_KEY_BACKGROUND = "pageBackground";
+
+    const DEFAULT_SETTINGS = Object.freeze({
+      title: "HỆ THỐNG ĐIỂM DANH QR",
+
+      description:
+        "Trường Tiểu học Hòa Ninh - Quản lý điểm danh nhanh chóng và chính xác",
+
+      primaryColor: "#087f5b"
+    });
+
+    const DEFAULT_LOGO_SVG = `
+      <svg xmlns="http://www.w3.org/2000/svg"
+           viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="96"
+                fill="#ffffff"
+                stroke="#087f5b"
+                stroke-width="8"/>
+        <circle cx="100" cy="100" r="78"
+                fill="#e8fff7"/>
+        <path d="M48 117 L100 88 L152 117 L100 146 Z"
+              fill="#087f5b"/>
+        <path d="M100 88 L100 146"
+              stroke="#ffffff"
+              stroke-width="5"/>
+        <path d="M72 67 L100 43 L128 67 L100 85 Z"
+              fill="#f59e0b"/>
+        <text x="100"
+              y="172"
+              text-anchor="middle"
+              font-family="Arial"
+              font-size="20"
+              font-weight="bold"
+              fill="#087f5b">HN</text>
+      </svg>
+    `;
+
+    const DEFAULT_LOGO_URL =
+      "data:image/svg+xml;charset=UTF-8," +
+      encodeURIComponent(DEFAULT_LOGO_SVG);
+
+    let elements = {};
     let scanner = null;
-    let dangXuLy = false;
-    let maVuaQuet = "";
+    let scanningLocked = false;
+    let lastScannedCode = "";
+    let toastTimer = null;
 
-    const CAI_DAT_MAC_DINH = {
-      tieuDe: "HỆ THỐNG ĐIỂM DANH QR",
-      moTa: "Trường Tiểu học Hòa Ninh - Quản lý điểm danh nhanh chóng và chính xác",
-      mau: "#087f5b",
-      logo: "",
-      nen: ""
-    };
+    let removeLogoRequested = false;
+    let removeBackgroundRequested = false;
 
-    function layCaiDat() {
+    let currentLogoObjectUrl = "";
+    let currentBackgroundObjectUrl = "";
+
+    /*
+      =====================================================
+      3. LẤY PHẦN TỬ GIAO DIỆN
+      =====================================================
+    */
+
+    function cacheElements() {
+      elements = {
+        schoolLogo:
+          document.getElementById("schoolLogo"),
+
+        mainTitle:
+          document.getElementById("mainTitle"),
+
+        mainDescription:
+          document.getElementById("mainDescription"),
+
+        currentDate:
+          document.getElementById("currentDate"),
+
+        systemState:
+          document.getElementById("systemState"),
+
+        scanResult:
+          document.getElementById("scanResult"),
+
+        totalStudents:
+          document.getElementById("totalStudents"),
+
+        presentStudents:
+          document.getElementById("presentStudents"),
+
+        absentStudents:
+          document.getElementById("absentStudents"),
+
+        attendanceRate:
+          document.getElementById("attendanceRate"),
+
+        recentList:
+          document.getElementById("recentList"),
+
+        absentList:
+          document.getElementById("absentList"),
+
+        openSettingsButton:
+          document.getElementById("openSettingsButton"),
+
+        settingsOverlay:
+          document.getElementById("settingsOverlay"),
+
+        closeSettingsXButton:
+          document.getElementById("closeSettingsXButton"),
+
+        closeSettingsButton:
+          document.getElementById("closeSettingsButton"),
+
+        saveSettingsButton:
+          document.getElementById("saveSettingsButton"),
+
+        restoreDefaultsButton:
+          document.getElementById("restoreDefaultsButton"),
+
+        titleInput:
+          document.getElementById("titleInput"),
+
+        descriptionInput:
+          document.getElementById("descriptionInput"),
+
+        primaryColorInput:
+          document.getElementById("primaryColorInput"),
+
+        logoInput:
+          document.getElementById("logoInput"),
+
+        backgroundInput:
+          document.getElementById("backgroundInput"),
+
+        removeLogoButton:
+          document.getElementById("removeLogoButton"),
+
+        removeBackgroundButton:
+          document.getElementById("removeBackgroundButton"),
+
+        logoSelectionState:
+          document.getElementById("logoSelectionState"),
+
+        backgroundSelectionState:
+          document.getElementById("backgroundSelectionState"),
+
+        settingsError:
+          document.getElementById("settingsError"),
+
+        refreshReportButton:
+          document.getElementById("refreshReportButton"),
+
+        loadAbsentButton:
+          document.getElementById("loadAbsentButton"),
+
+        toast:
+          document.getElementById("toast")
+      };
+    }
+
+    /*
+      =====================================================
+      4. LOCALSTORAGE CHỈ LƯU CHỮ VÀ MÀU
+      =====================================================
+    */
+
+    function loadTextSettings() {
       try {
-        const duLieu = localStorage.getItem("caiDatGiaoDienQR");
-        if (!duLieu) return { ...CAI_DAT_MAC_DINH };
-        return { ...CAI_DAT_MAC_DINH, ...JSON.parse(duLieu) };
-      } catch (loi) {
-        return { ...CAI_DAT_MAC_DINH };
+        const savedText =
+          localStorage.getItem(SETTINGS_KEY);
+
+        if (!savedText) {
+          return { ...DEFAULT_SETTINGS };
+        }
+
+        const parsed = JSON.parse(savedText);
+
+        return {
+          title:
+            typeof parsed.title === "string" &&
+            parsed.title.trim()
+              ? parsed.title.trim()
+              : DEFAULT_SETTINGS.title,
+
+          description:
+            typeof parsed.description === "string" &&
+            parsed.description.trim()
+              ? parsed.description.trim()
+              : DEFAULT_SETTINGS.description,
+
+          primaryColor:
+            isValidHexColor(parsed.primaryColor)
+              ? parsed.primaryColor
+              : DEFAULT_SETTINGS.primaryColor
+        };
+
+      } catch (error) {
+        console.error(
+          "Không đọc được cài đặt chữ:",
+          error
+        );
+
+        return { ...DEFAULT_SETTINGS };
       }
     }
 
-    function luuCaiDatVaoMay(caiDat) {
-      localStorage.setItem("caiDatGiaoDienQR", JSON.stringify(caiDat));
-    }
-
-    function apDungCaiDat(caiDat) {
-      document.getElementById("tieuDe").textContent = caiDat.tieuDe;
-      document.getElementById("moTa").textContent = caiDat.moTa;
-      document.documentElement.style.setProperty("--mau-chu-dao", caiDat.mau);
-
-      if (caiDat.logo) {
-        document.getElementById("logoTruong").src = caiDat.logo;
-      }
-
-      if (caiDat.nen) {
-        document.body.style.backgroundImage =
-          "linear-gradient(rgba(0,45,35,0.50), rgba(0,45,35,0.50)), url('" + caiDat.nen + "')";
-      }
-    }
-
-    function moCaiDat() {
-      const caiDat = layCaiDat();
-      document.getElementById("nhapTieuDe").value = caiDat.tieuDe || "";
-      document.getElementById("nhapMoTa").value = caiDat.moTa || "";
-      document.getElementById("nhapMau").value = caiDat.mau || "#087f5b";
-      document.getElementById("lopCaiDat").style.display = "block";
-    }
-
-    function dongCaiDat() {
-      document.getElementById("lopCaiDat").style.display = "none";
-    }
-
-    function docFileAnh(input) {
-      return new Promise(function(resolve) {
-        const file = input.files[0];
-        if (!file) { resolve(""); return; }
-        const reader = new FileReader();
-        reader.noscript = function(e) { resolve(e.target.result); };
-        reader.readAsDataURL(file);
-      });
-    }
-
-    async function luuCaiDat() {
-      const caiDatCu = layCaiDat();
-
-      const caiDatMoi = {
-        tieuDe: document.getElementById("nhapTieuDe").value.trim() || caiDatCu.tieuDe,
-        moTa: document.getElementById("nhapMoTa").value.trim() || caiDatCu.moTa,
-        mau: document.getElementById("nhapMau").value || caiDatCu.mau,
-        logo: caiDatCu.logo,
-        nen: caiDatCu.nen
+    function saveTextSettings(settings) {
+      const data = {
+        title: settings.title,
+        description: settings.description,
+        primaryColor: settings.primaryColor
       };
 
-      const logoMoi = await docFileAnh(document.getElementById("nhapLogo"));
-      const nenMoi = await docFileAnh(document.getElementById("nhapNen"));
-
-      if (logoMoi) caiDatMoi.logo = logoMoi;
-      if (nenMoi) caiDatMoi.nen = nenMoi;
-
-      try {
-        luuCaiDatVaoMay(caiDatMoi);
-        apDungCaiDat(caiDatMoi);
-        dongCaiDat();
-        alert("Đã lưu cài đặt giao diện trên máy này.");
-      } catch (loi) {
-        alert("Không thể lưu ảnh. Thầy hãy chọn ảnh có dung lượng nhỏ hơn.");
-      }
+      localStorage.setItem(
+        SETTINGS_KEY,
+        JSON.stringify(data)
+      );
     }
 
-    function khoiPhucMacDinh() {
-      localStorage.removeItem("caiDatGiaoDienQR");
-      apDungCaiDat(CAI_DAT_MAC_DINH);
-      dongCaiDat();
-      alert("Đã khôi phục giao diện mặc định.");
+    function isValidHexColor(value) {
+      return /^#[0-9a-fA-F]{6}$/.test(
+        String(value || "")
+      );
     }
 
-    function hienThiKetQua(noiDung, lop) {
-      const box = document.getElementById("ketQua");
-      box.textContent = noiDung;
-      box.className = "ket-qua " + (lop || "");
-    }
+    /*
+      =====================================================
+      5. INDEXEDDB LƯU LOGO VÀ HÌNH NỀN
+      =====================================================
+    */
 
-    function jsonp(action, params = {}) {
+    function openImageDatabase() {
       return new Promise(function(resolve, reject) {
-        const callbackName = "cb_" + Date.now() + "_" + Math.floor(Math.random() * 10000);
-        const script = document.createElement("script");
-
-        params.action = action;
-        params.callback = callbackName;
-
-        const query = new URLSearchParams(params).toString();
-        script.src = URL_APPS_SCRIPT + "?" + query;
-
-        window[callbackName] = function(data) { resolve(data); donDep(); };
-        script.noscript = function() { reject(new Error("Không kết nối được Apps Script")); donDep(); };
-
-        function donDep() {
-          delete window[callbackName];
-          if (script.parentNode) script.parentNode.removeChild(script);
+        if (!("indexedDB" in window)) {
+          reject(
+            new Error(
+              "Trình duyệt không hỗ trợ IndexedDB."
+            )
+          );
+          return;
         }
 
-        document.body.appendChild(script);
+        const request =
+          indexedDB.open(DB_NAME, DB_VERSION);
+
+        request.onupgradeneeded = function(event) {
+          const database = event.target.result;
+
+          if (
+            !database.objectStoreNames.contains(
+              IMAGE_STORE
+            )
+          ) {
+            database.createObjectStore(IMAGE_STORE);
+          }
+        };
+
+        request.onsuccess = function() {
+          resolve(request.result);
+        };
+
+        request.noscript = function() {
+          reject(
+            request.error ||
+            new Error("Không mở được kho lưu ảnh.")
+          );
+        };
+
+        request.onblocked = function() {
+          reject(
+            new Error(
+              "Kho ảnh đang bị khóa bởi một tab khác."
+            )
+          );
+        };
       });
     }
 
-    async function guiMaQR(maQR) {
-      maQR = String(maQR || "").trim().toUpperCase();
-      if (!maQR || dangXuLy || maQR === maVuaQuet) return;
+    async function putImage(key, blob) {
+      const database = await openImageDatabase();
 
-      dangXuLy = true;
-      maVuaQuet = maQR;
+      return new Promise(function(resolve, reject) {
+        const transaction =
+          database.transaction(
+            IMAGE_STORE,
+            "readwrite"
+          );
 
-      if (scanner) { try { scanner.pause(true); } catch (loi) {} }
+        const store =
+          transaction.objectStore(IMAGE_STORE);
 
-      hienThiKetQua("Đang kiểm tra mã: " + maQR, "canh-bao");
+        store.put(blob, key);
 
-      try {
-        const ketQua = await jsonp("diemdanh", { maQR: maQR });
+        transaction.oncomplete = function() {
+          database.close();
+          resolve();
+        };
 
-        if (ketQua.thanhCong) {
-          hienThiKetQua("✓ " + ketQua.hoTen + "\nLớp: " + ketQua.lop + "\nĐiểm danh thành công", "thanh-cong");
-        } else {
-          hienThiKetQua("⚠ " + ketQua.thongBao, "that-bai");
-        }
+        transaction.noscript = function() {
+          const error =
+            transaction.error ||
+            new Error("Không lưu được ảnh.");
 
-        await taiBaoCao();
-      } catch (loi) {
-        hienThiKetQua("Lỗi kết nối Google Sheets", "that-bai");
+          database.close();
+          reject(error);
+        };
+
+        transaction.noscript = function() {
+          const error =
+            transaction.error ||
+            new Error("Thao tác lưu ảnh bị hủy.");
+
+          database.close();
+          reject(error);
+        };
+      });
+    }
+
+    async function getImage(key) {
+      const database = await openImageDatabase();
+
+      return new Promise(function(resolve, reject) {
+        const transaction =
+          database.transaction(
+            IMAGE_STORE,
+            "readonly"
+          );
+
+        const store =
+          transaction.objectStore(IMAGE_STORE);
+
+        const request = store.get(key);
+
+        request.onsuccess = function() {
+          database.close();
+          resolve(request.result || null);
+        };
+
+        request.noscript = function() {
+          const error =
+            request.error ||
+            new Error("Không đọc được ảnh.");
+
+          database.close();
+          reject(error);
+        };
+      });
+    }
+
+    async function deleteImage(key) {
+      const database = await openImageDatabase();
+
+      return new Promise(function(resolve, reject) {
+        const transaction =
+          database.transaction(
+            IMAGE_STORE,
+            "readwrite"
+          );
+
+        const store =
+          transaction.objectStore(IMAGE_STORE);
+
+        store.delete(key);
+
+        transaction.oncomplete = function() {
+          database.close();
+          resolve();
+        };
+
+        transaction.noscript = function() {
+          const error =
+            transaction.error ||
+            new Error("Không xóa được ảnh.");
+
+          database.close();
+          reject(error);
+        };
+      });
+    }
+
+    /*
+      =====================================================
+      6. THU NHỎ VÀ NÉN ẢNH
+      =====================================================
+    */
+
+    function validateImageFile(file) {
+      if (!file) {
+        return;
       }
 
-      setTimeout(function() {
-        dangXuLy = false;
-        maVuaQuet = "";
-        if (scanner) { try { scanner.resume(); } catch (loi) {} }
-        hienThiKetQua("Sẵn sàng quét mã QR", "");
-      }, 2500);
-    }
+      const acceptedTypes = [
+        "image/png",
+        "image/jpeg",
+        "image/webp"
+      ];
 
-    async function taiBaoCao() {
-      try {
-        const thongKe = await jsonp("thongke");
+      if (!acceptedTypes.includes(file.type)) {
+        throw new Error(
+          "Chỉ chấp nhận ảnh PNG, JPG, JPEG hoặc WEBP."
+        );
+      }
 
-        if (thongKe.thanhCong) {
-          document.getElementById("tongHocSinh").textContent = thongKe.tongHocSinh;
-          document.getElementById("daDiemDanh").textContent = thongKe.daDiemDanh;
-          document.getElementById("chuaDiemDanh").textContent = thongKe.chuaDiemDanh;
-          document.getElementById("tyLe").textContent = thongKe.tyLe + "%";
-        }
+      const maximumOriginalSize =
+        20 * 1024 * 1024;
 
-        const ganDay = await jsonp("ganday");
-        const box = document.getElementById("danhSachGanDay");
-
-        if (ganDay.thanhCong && ganDay.danhSach && ganDay.danhSach.length > 0) {
-          box.innerHTML = ganDay.danhSach.map(function(item) {
-            return `
-              <div class="dong-hoc-sinh">
-                <strong>${item.hoTen} - ${item.lop}</strong>
-                <div>Mã: ${item.maQR}</div>
-                <div>Thời gian: ${item.thoiGian}</div>
-              </div>
-            `;
-          }).join("");
-        } else {
-          box.textContent = "Chưa có dữ liệu";
-        }
-      } catch (loi) {
-        console.log(loi);
+      if (file.size > maximumOriginalSize) {
+        throw new Error(
+          "Ảnh gốc quá lớn. Dung lượng tối đa là 20 MB."
+        );
       }
     }
 
-    async function taiDanhSachChuaDiemDanh() {
-      try {
-        const data = await jsonp("chuadiemdanh");
-        const box = document.getElementById("danhSachChua");
+    function loadImageFromFile(file) {
+      return new Promise(function(resolve, reject) {
+        const temporaryUrl =
+          URL.createObjectURL(file);
 
-        if (data.thanhCong && data.danhSach && data.danhSach.length > 0) {
-          box.innerHTML = data.danhSach.map(function(item) {
-            return `
-              <div class="dong-hoc-sinh">
-                <strong>${item.hoTen}</strong>
-                <div>Lớp: ${item.lop}</div>
-                <div>Mã: ${item.maQR}</div>
-              </div>
-            `;
-          }).join("");
-        } else {
-          box.textContent = "Tất cả học sinh đã điểm danh";
-        }
-      } catch (loi) {
-        document.getElementById("danhSachChua").textContent = "Không tải được dữ liệu";
+        const image = new Image();
+
+        image.noscript = function() {
+          URL.revokeObjectURL(temporaryUrl);
+          resolve(image);
+        };
+
+        image.noscript = function() {
+          URL.revokeObjectURL(temporaryUrl);
+
+          reject(
+            new Error(
+              "Không đọc được nội dung file ảnh."
+            )
+          );
+        };
+
+        image.src = temporaryUrl;
+      });
+    }
+
+    async function compressImage(
+      file,
+      maximumWidth,
+      maximumHeight,
+      outputType,
+      quality
+    ) {
+      validateImageFile(file);
+
+      const image =
+        await loadImageFromFile(file);
+
+      const originalWidth =
+        image.naturalWidth || image.width;
+
+      const originalHeight =
+        image.naturalHeight || image.height;
+
+      if (!originalWidth || !originalHeight) {
+        throw new Error(
+          "Không xác định được kích thước ảnh."
+        );
       }
-    }
 
-    function khiQuetThanhCong(maQR) { guiMaQR(maQR); }
-    function khiQuetThatBai() {}
-
-    function hienThiNgay() {
-      const ngay = new Date();
-      document.getElementById("ngayHienTai").textContent = ngay.toLocaleDateString("vi-VN");
-    }
-
-    document.addEventListener("DOMContentLoaded", function() {
-      // Gắn sự kiện cho các nút (thay cho noscript để tránh lỗi)
-      document.getElementById("nutMoCaiDat").addEventListener("click", moCaiDat);
-      document.getElementById("nutDongCaiDat").addEventListener("click", dongCaiDat);
-      document.getElementById("nutKhoiPhuc").addEventListener("click", khoiPhucMacDinh);
-      document.getElementById("nutLuuCaiDat").addEventListener("click", luuCaiDat);
-      document.getElementById("nutLamMoi").addEventListener("click", taiBaoCao);
-      document.getElementById("nutXemChua").addEventListener("click", taiDanhSachChuaDiemDanh);
-
-      const caiDat = layCaiDat();
-      apDungCaiDat(caiDat);
-      hienThiNgay();
-
-      scanner = new Html5QrcodeScanner(
-        "reader",
-        { fps: 10, qrbox: { width: 300, height: 300 }, rememberLastUsedCamera: true },
-        false
+      const scale = Math.min(
+        1,
+        maximumWidth / originalWidth,
+        maximumHeight / originalHeight
       );
 
-      scanner.render(khiQuetThanhCong, khiQuetThatBai);
+      const targetWidth = Math.max(
+        1,
+        Math.round(originalWidth * scale)
+      );
 
-      taiBaoCao();
-    });
-  </script>
+      const targetHeight = Math.max(
+        1,
+        Math.round(originalHeight * scale)
+      );
 
-</body>
-</html>
+      const canvas =
+        document.createElement("canvas");
+
+      canvas.width = targetWidth;
+      canvas.height = targetHeight;
+
+      const context =
+        canvas.getContext("2d", {
+          alpha: outputType === "image/png"
+        });
+
+      if (!context) {
+        throw new Error(
+          "Trình duyệt không tạo được vùng xử lý ảnh."
+        );
+      }
+
+      if (outputType === "image/jpeg") {
+        context.fillStyle = "#ffffff";
+        context.fillRect(
+          0,
+          0,
+          targetWidth,
+          targetHeight
+        );
+      }
+
+      context.imageSmoothingEnabled = true;
+      context.imageSmoothingQuality = "high";
+
+      context.drawImage(
+        image,
+        0,
+        0,
+        targetWidth,
+        targetHeight
+      );
+
+      const blob = await new Promise(
+        function(resolve, reject) {
+          canvas.toBlob(
+            function(result) {
+              if (result) {
+                resolve(result);
+              } else {
+                reject(
+                  new Error(
+                    "Không thể nén ảnh đã chọn."
+                  )
+                );
+              }
+            },
+            outputType,
+            quality
+          );
+        }
+      );
+
+      const maximumCompressedSize =
+        4 * 1024 * 1024;
+
+      if (blob.size > maximumCompressedSize) {
+        throw new Error(
+          "Ảnh sau khi xử lý vẫn quá lớn. Hãy chọn ảnh khác."
+        );
+      }
+
+      return blob;
+    }
+
+    /*
+      =====================================================
+      7. ÁP DỤNG GIAO DIỆN
+      =====================================================
+    */
+
+    function revokeCurrentObjectUrls() {
+      if (currentLogoObjectUrl) {
+        URL.revokeObjectURL(
+          currentLogoObjectUrl
+        );
+
+        currentLogoObjectUrl = "";
+      }
+
+      if (currentBackgroundObjectUrl) {
+        URL.revokeObjectURL(
+          currentBackgroundObjectUrl
+        );
+
+        currentBackgroundObjectUrl = "";
+      }
+    }
+
+    async function applyInterfaceSettings() {
+      const settings = loadTextSettings();
+
+      elements.mainTitle.textContent =
+        settings.title;
+
+      elements.mainDescription.textContent =
+        settings.description;
+
+      document.documentElement.style.setProperty(
+        "--primary",
+        settings.primaryColor
+      );
+
+      document.documentElement.style.setProperty(
+        "--primary-dark",
+        darkenHexColor(
+          settings.primaryColor,
+          24
+        )
+      );
+
+      revokeCurrentObjectUrls();
+
+      elements.schoolLogo.src =
+        DEFAULT_LOGO_URL;
+
+      resetDefaultBackground();
+
+      try {
+        const logoBlob =
+          await getImage(IMAGE_KEY_LOGO);
+
+        if (logoBlob instanceof Blob) {
+          currentLogoObjectUrl =
+            URL.createObjectURL(logoBlob);
+
+          elements.schoolLogo.src =
+            currentLogoObjectUrl;
+        }
+
+      } catch (error) {
+        console.warn(
+          "Không tải được logo:",
+          error
+        );
+      }
+
+      try {
+        const backgroundBlob =
+          await getImage(
+            IMAGE_KEY_BACKGROUND
+          );
+
+        if (backgroundBlob instanceof Blob) {
+          currentBackgroundObjectUrl =
+            URL.createObjectURL(
+              backgroundBlob
+            );
+
+          document.body.style.backgroundImage =
+            "linear-gradient(" +
+            "rgba(0,45,35,0.52)," +
+            "rgba(0,45,35,0.52)" +
+            "), url('" +
+            currentBackgroundObjectUrl +
+            "')";
+        }
+
+      } catch (error) {
+        console.warn(
+          "Không tải được hình nền:",
+          error
+        );
+      }
+    }
+
+    function resetDefaultBackground() {
+      document.body.style.backgroundImage =
+        "radial-gradient(" +
+          "circle at 20% 20%," +
+          "rgba(255,255,255,0.14)," +
+          "transparent 32%" +
+        ")," +
+        "radial-gradient(" +
+          "circle at 80% 10%," +
+          "rgba(59,130,246,0.22)," +
+          "transparent 30%" +
+        ")," +
+        "linear-gradient(" +
+          "135deg," +
+          "#064e3b," +
+          "#087f5b 48%," +
+          "#0f766e" +
+        ")";
+    }
+
+    function darkenHexColor(hex, amount) {
+      const cleanHex =
+        String(hex).replace("#", "");
+
+      if (!/^[0-9a-fA-F]{6}$/.test(cleanHex)) {
+        return "#065f46";
+      }
+
+      const number =
+        parseInt(cleanHex, 16);
+
+      const red = Math.max(
+        0,
+        (number >> 16) - amount
+      );
+
+      const green = Math.max(
+        0,
+        ((number >> 8) & 0x00ff) - amount
+      );
+
+      const blue = Math.max(
+        0,
+        (number & 0x0000ff) - amount
+      );
+
+      return (
+        "#" +
+        [red, green, blue]
+          .map(function(value) {
+            return value
+              .toString(16)
+              .padStart(2, "0");
+          })
+          .join("")
+      );
+    }
+
+    /*
+      =====================================================
+      8. MỞ, ĐÓNG VÀ LƯU CÀI ĐẶT
+      =====================================================
+    */
+
+    function openSettings() {
+      const settings = loadTextSettings();
+
+      elements.titleInput.value =
+        settings.title;
+
+      elements.descriptionInput.value =
+        settings.description;
+
+      elements.primaryColorInput.value =
+        settings.primaryColor;
+
+      elements.logoInput.value = "";
+      elements.backgroundInput.value = "";
+
+      elements.logoSelectionState.textContent = "";
+      elements.backgroundSelectionState.textContent = "";
+
+      removeLogoRequested = false;
+      removeBackgroundRequested = false;
+
+      hideSettingsError();
+
+      elements.settingsOverlay.hidden = false;
+
+      document.body.classList.add(
+        "modal-open"
+      );
+
+      window.setTimeout(function() {
+        elements.titleInput.focus();
+      }, 50);
+    }
+
+    function closeSettings() {
+      if (elements.saveSettingsButton.disabled) {
+        return;
+      }
+
+      elements.settingsOverlay.hidden = true;
+
+      document.body.classList.remove(
+        "modal-open"
+      );
+
+      hideSettingsError();
+    }
+
+    function showSettingsError(message) {
+      elements.settingsError.textContent =
+        message;
+
+      elements.settingsError.hidden = false;
+    }
+
+    function hideSettingsError() {
+      elements.settingsError.textContent = "";
+      elements.settingsError.hidden = true;
+    }
+
+    function markLogoForRemoval() {
+      removeLogoRequested = true;
+      elements.logoInput.value = "";
+
+      elements.logoSelectionState.textContent =
+        "Logo hiện tại sẽ bị xóa khi bấm Lưu cài đặt.";
+    }
+
+    function markBackgroundForRemoval() {
+      removeBackgroundRequested = true;
+      elements.backgroundInput.value = "";
+
+      elements.backgroundSelectionState.textContent =
+        "Hình nền hiện tại sẽ bị xóa khi bấm Lưu cài đặt.";
+    }
+
+    async function saveSettings() {
+      if (elements.saveSettingsButton.disabled) {
+        return;
+      }
+
+      hideSettingsError();
+
+      const title =
+        elements.titleInput.value.trim();
+
+      const description =
+        elements.descriptionInput.value.trim();
+
+      const primaryColor =
+        elements.primaryColorInput.value;
+
+      if (!title) {
+        showSettingsError(
+          "Tiêu đề hệ thống không được để trống."
+        );
+
+        elements.titleInput.focus();
+        return;
+      }
+
+      if (title.length > 100) {
+        showSettingsError(
+          "Tiêu đề không được dài quá 100 ký tự."
+        );
+
+        elements.titleInput.focus();
+        return;
+      }
+
+      if (!description) {
+        showSettingsError(
+          "Nội dung mô tả không được để trống."
+        );
+
+        elements.descriptionInput.focus();
+        return;
+      }
+
+      if (!isValidHexColor(primaryColor)) {
+        showSettingsError(
+          "Màu chủ đạo không hợp lệ."
+        );
+
+        return;
+      }
+
+      const selectedLogo =
+        elements.logoInput.files[0] || null;
+
+      const selectedBackground =
+        elements.backgroundInput.files[0] || null;
+
+      const originalButtonText =
+        elements.saveSettingsButton.textContent;
+
+      elements.saveSettingsButton.disabled = true;
+
+      elements.saveSettingsButton.textContent =
+        "Đang lưu...";
+
+      try {
+        /*
+          Lưu chữ trước. Nếu localStorage bị chặn,
+          lỗi sẽ được bắt và hiển thị rõ.
+        */
+
+        saveTextSettings({
+          title: title,
+          description: description,
+          primaryColor: primaryColor
+        });
+
+        /*
+          Xử lý logo.
+        */
+
+        if (removeLogoRequested) {
+          await deleteImage(IMAGE_KEY_LOGO);
+        }
+
+        if (selectedLogo) {
+          const logoBlob =
+            await compressImage(
+              selectedLogo,
+              512,
+              512,
+              "image/png",
+              0.92
+            );
+
+          await putImage(
+            IMAGE_KEY_LOGO,
+            logoBlob
+          );
+        }
+
+        /*
+          Xử lý ảnh nền.
+        */
+
+        if (removeBackgroundRequested) {
+          await deleteImage(
+            IMAGE_KEY_BACKGROUND
+          );
+        }
+
+        if (selectedBackground) {
+          const backgroundBlob =
+            await compressImage(
+              selectedBackground,
+              1920,
+              1080,
+              "image/jpeg",
+              0.82
+            );
+
+          await putImage(
+            IMAGE_KEY_BACKGROUND,
+            backgroundBlob
+          );
+        }
+
+        await applyInterfaceSettings();
+
+        elements.settingsOverlay.hidden = true;
+
+        document.body.classList.remove(
+          "modal-open"
+        );
+
+        showToast(
+          "Đã lưu cài đặt giao diện thành công.",
+          "success"
+        );
+
+      } catch (error) {
+        console.error(
+          "Lỗi lưu cài đặt:",
+          error
+        );
+
+        let message =
+          error && error.message
+            ? error.message
+            : "Không thể lưu cài đặt.";
+
+        if (
+          error &&
+          (
+            error.name === "QuotaExceededError" ||
+            error.name === "NS_ERROR_DOM_QUOTA_REACHED"
+          )
+        ) {
+          message =
+            "Bộ nhớ trình duyệt đã đầy. Hãy xóa dữ liệu trang web hoặc chọn ảnh nhỏ hơn.";
+        }
+
+        if (
+          error &&
+          error.name === "SecurityError"
+        ) {
+          message =
+            "Trình duyệt đang chặn việc lưu dữ liệu. Hãy cho phép trang web lưu dữ liệu.";
+        }
+
+        showSettingsError(message);
+
+      } finally {
+        elements.saveSettingsButton.disabled = false;
+
+        elements.saveSettingsButton.textContent =
+          originalButtonText;
+      }
+    }
+
+    async function restoreDefaultSettings() {
+      const confirmed = window.confirm(
+        "Thầy có chắc muốn khôi phục toàn bộ giao diện mặc định không?"
+      );
+
+      if (!confirmed) {
+        return;
+      }
+
+      elements.restoreDefaultsButton.disabled = true;
+
+      try {
+        localStorage.removeItem(SETTINGS_KEY);
+
+        /*
+          Xóa khóa cũ của những phiên bản trước,
+          tránh ảnh Base64 cũ chiếm dung lượng.
+        */
+
+        localStorage.removeItem(
+          "caiDatGiaoDienQR"
+        );
+
+        await Promise.allSettled([
+          deleteImage(IMAGE_KEY_LOGO),
+          deleteImage(IMAGE_KEY_BACKGROUND)
+        ]);
+
+        await applyInterfaceSettings();
+
+        elements.titleInput.value =
+          DEFAULT_SETTINGS.title;
+
+        elements.descriptionInput.value =
+          DEFAULT_SETTINGS.description;
+
+        elements.primaryColorInput.value =
+          DEFAULT_SETTINGS.primaryColor;
+
+        elements.logoInput.value = "";
+        elements.backgroundInput.value = "";
+
+        removeLogoRequested = false;
+        removeBackgroundRequested = false;
+
+        elements.logoSelectionState.textContent = "";
+        elements.backgroundSelectionState.textContent = "";
+
+        elements.settingsOverlay.hidden = true;
+
+        document.body.classList.remove(
+          "modal-open"
+        );
+
+        showToast(
+          "Đã khôi phục giao diện mặc định.",
+          "success"
+        );
+
+      } catch (error) {
+        console.error(
+          "Lỗi khôi phục mặc định:",
+          error
+        );
+
+        showSettingsError(
+          "Không thể khôi phục giao diện mặc định."
+        );
+
+      } finally {
+        elements.restoreDefaultsButton.disabled = false;
+      }
+    }
+
+    /*
+      =====================================================
+      9. HIỂN THỊ THÔNG BÁO
+      =====================================================
+    */
+
+    function showToast(message, type) {
+      window.clearTimeout(toastTimer);
+
+      elements.toast.textContent = message;
+
+      elements.toast.className =
+        "toast " +
+        (
+          type === "success"
+            ? "toast-success"
+            : type === "error"
+              ? "toast-error"
+              : ""
+        );
+
+      elements.toast.hidden = false;
+
+      toastTimer = window.setTimeout(
+        function() {
+          elements.toast.hidden = true;
+        },
+        3500
+      );
+    }
+
+    function showScanResult(message, type) {
+      elements.scanResult.textContent = message;
+
+      elements.scanResult.className =
+        "result-box";
+
+      if (type === "success") {
+        elements.scanResult.classList.add(
+          "result-success"
+        );
+      }
+
+      if (type === "error") {
+        elements.scanResult.classList.add(
+          "result-error"
+        );
+      }
+
+      if (type === "warning") {
+        elements.scanResult.classList.add(
+          "result-warning"
+        );
+      }
+    }
+
+    function setSystemState(text) {
+      elements.systemState.textContent = text;
+    }
+
+    /*
+      =====================================================
+      10. KẾT NỐI APPS SCRIPT BẰNG JSONP
+      =====================================================
+    */
+
+    function isAppsScriptConfigured() {
+      const value =
+        String(URL_APPS_SCRIPT || "").trim();
+
+      return (
+        value.startsWith("https://") &&
+        value.includes(
+          "script.google.com/macros/s/"
+        ) &&
+        value.endsWith("/exec") &&
+        !value.includes("DÁN_LINK")
+      );
+    }
+
+    function jsonpRequest(action, parameters) {
+      return new Promise(
+        function(resolve, reject) {
+          if (!isAppsScriptConfigured()) {
+            reject(
+              new Error(
+                "Chưa thay đường dẫn Apps Script trong index.html."
+              )
+            );
+            return;
+          }
+
+          const callbackName =
+            "qrCallback_" +
+            Date.now() +
+            "_" +
+            Math.floor(
+              Math.random() * 1000000
+            );
+
+          const script =
+            document.createElement("script");
+
+          const requestParameters = {
+            ...(parameters || {}),
+            action: action,
+            callback: callbackName,
+            t: Date.now()
+          };
+
+          const query =
+            new URLSearchParams(
+              requestParameters
+            ).toString();
+
+          let finished = false;
+
+          const timeout = window.setTimeout(
+            function() {
+              finish();
+
+              reject(
+                new Error(
+                  "Máy chủ phản hồi quá chậm. Vui lòng thử lại."
+                )
+              );
+            },
+            15000
+          );
+
+          window[callbackName] = function(data) {
+            if (finished) {
+              return;
+            }
+
+            finish();
+            resolve(data);
+          };
+
+          script.noscript = function() {
+            if (finished) {
+              return;
+            }
+
+            finish();
+
+            reject(
+              new Error(
+                "Không kết nối được với Apps Script."
+              )
+            );
+          };
+
+          script.src =
+            URL_APPS_SCRIPT +
+            "?" +
+            query;
+
+          script.async = true;
+
+          function finish() {
+            if (finished) {
+              return;
+            }
+
+            finished = true;
+
+            window.clearTimeout(timeout);
+
+            try {
+              delete window[callbackName];
+            } catch (error) {
+              window[callbackName] = undefined;
+            }
+
+            if (script.parentNode) {
+              script.parentNode.removeChild(
+                script
+              );
+            }
+          }
+
+          document.body.appendChild(script);
+        }
+      );
+    }
+
+    /*
+      =====================================================
+      11. QUÉT VÀ GỬI MÃ QR
+      =====================================================
+    */
+
+    async function processQrCode(rawCode) {
+      const qrCode =
+        String(rawCode || "")
+          .trim()
+          .toUpperCase();
+
+      if (!qrCode) {
+        return;
+      }
+
+      if (scanningLocked) {
+        return;
+      }
+
+      if (qrCode === lastScannedCode) {
+        return;
+      }
+
+      scanningLocked = true;
+      lastScannedCode = qrCode;
+
+      setSystemState("Đang xử lý");
+
+      showScanResult(
+        "Đang kiểm tra mã: " + qrCode,
+        "warning"
+      );
+
+      try {
+        const result =
+          await jsonpRequest(
+            "diemdanh",
+            {
+              maQR: qrCode
+            }
+          );
+
+        if (result && result.thanhCong) {
+          showScanResult(
+            "✓ " +
+            safeText(result.hoTen) +
+            "\nLớp: " +
+            safeText(result.lop) +
+            "\nĐiểm danh thành công",
+            "success"
+          );
+
+          setSystemState("Điểm danh thành công");
+
+        } else {
+          showScanResult(
+            "⚠ " +
+            safeText(
+              result && result.thongBao
+                ? result.thongBao
+                : "Không thể điểm danh"
+            ),
+            "error"
+          );
+
+          setSystemState("Không ghi nhận");
+        }
+
+        await refreshReport();
+
+      } catch (error) {
+        console.error(
+          "Lỗi điểm danh:",
+          error
+        );
+
+        showScanResult(
+          error.message ||
+          "Lỗi kết nối Google Sheets",
+          "error"
+        );
+
+        setSystemState("Lỗi kết nối");
+      }
+
+      window.setTimeout(
+        function() {
+          scanningLocked = false;
+          lastScannedCode = "";
+
+          showScanResult(
+            "Sẵn sàng quét mã QR",
+            ""
+          );
+
+          setSystemState("Sẵn sàng");
+        },
+        3000
+      );
+    }
+
+    function initializeScanner() {
+      if (
+        typeof window.Html5QrcodeScanner !==
+        "function"
+      ) {
+        showScanResult(
+          "Không tải được thư viện quét QR. Hãy kiểm tra kết nối Internet rồi tải lại trang.",
+          "error"
+        );
+
+        setSystemState("Lỗi thư viện QR");
+        return;
+      }
+
+      try {
+        scanner =
+          new Html5QrcodeScanner(
+            "reader",
+            {
+              fps: 10,
+
+              qrbox: function(
+                viewportWidth,
+                viewportHeight
+              ) {
+                const minimumSide =
+                  Math.min(
+                    viewportWidth,
+                    viewportHeight
+                  );
+
+                const size =
+                  Math.max(
+                    180,
+                    Math.min(
+                      300,
+                      Math.floor(
+                        minimumSide * 0.72
+                      )
+                    )
+                  );
+
+                return {
+                  width: size,
+                  height: size
+                };
+              },
+
+              aspectRatio: 1,
+              rememberLastUsedCamera: true,
+
+              supportedScanTypes: [
+                Html5QrcodeScanType.SCAN_TYPE_CAMERA,
+                Html5QrcodeScanType.SCAN_TYPE_FILE
+              ]
+            },
+            false
+          );
+
+        scanner.render(
+          function(decodedText) {
+            processQrCode(decodedText);
+          },
+          function() {
+            /*
+              Không hiển thị lỗi liên tục trong lúc
+              camera chưa nhìn thấy mã QR.
+            */
+          }
+        );
+
+        showScanResult(
+          "Sẵn sàng quét mã QR",
+          ""
+        );
+
+        setSystemState("Sẵn sàng");
+
+      } catch (error) {
+        console.error(
+          "Lỗi khởi tạo camera:",
+          error
+        );
+
+        showScanResult(
+          "Không khởi tạo được camera: " +
+          (
+            error.message ||
+            String(error)
+          ),
+          "error"
+        );
+
+        setSystemState("Camera chưa sẵn sàng");
+      }
+    }
+
+    /*
+      =====================================================
+      12. BÁO CÁO VÀ DANH SÁCH
+      =====================================================
+    */
+
+    async function refreshReport() {
+      if (!isAppsScriptConfigured()) {
+        return;
+      }
+
+      elements.refreshReportButton.disabled =
+        true;
+
+      try {
+        const statistics =
+          await jsonpRequest(
+            "thongke",
+            {}
+          );
+
+        if (
+          statistics &&
+          statistics.thanhCong
+        ) {
+          elements.totalStudents.textContent =
+            numberOrZero(
+              statistics.tongHocSinh
+            );
+
+          elements.presentStudents.textContent =
+            numberOrZero(
+              statistics.daDiemDanh
+            );
+
+          elements.absentStudents.textContent =
+            numberOrZero(
+              statistics.chuaDiemDanh
+            );
+
+          elements.attendanceRate.textContent =
+            numberOrZero(
+              statistics.tyLe
+            ) + "%";
+        }
+
+        const recent =
+          await jsonpRequest(
+            "ganday",
+            {}
+          );
+
+        renderRecentStudents(recent);
+
+      } catch (error) {
+        console.error(
+          "Không tải được báo cáo:",
+          error
+        );
+
+        showToast(
+          error.message ||
+          "Không tải được báo cáo.",
+          "error"
+        );
+
+      } finally {
+        elements.refreshReportButton.disabled =
+          false;
+      }
+    }
+
+    async function loadAbsentStudents() {
+      if (!isAppsScriptConfigured()) {
+        showToast(
+          "Chưa cấu hình đường dẫn Apps Script.",
+          "error"
+        );
+
+        return;
+      }
+
+      elements.loadAbsentButton.disabled = true;
+
+      elements.absentList.innerHTML =
+        '<div class="empty-message">' +
+        "Đang tải danh sách..." +
+        "</div>";
+
+      try {
+        const result =
+          await jsonpRequest(
+            "chuadiemdanh",
+            {}
+          );
+
+        renderAbsentStudents(result);
+
+      } catch (error) {
+        console.error(
+          "Không tải được danh sách:",
+          error
+        );
+
+        elements.absentList.innerHTML =
+          '<div class="empty-message">' +
+          escapeHtml(
+            error.message ||
+            "Không tải được dữ liệu."
+          ) +
+          "</div>";
+
+      } finally {
+        elements.loadAbsentButton.disabled =
+          false;
+      }
+    }
+
+    function renderRecentStudents(result) {
+      const list =
+        result &&
+        result.thanhCong &&
+        Array.isArray(result.danhSach)
+          ? result.danhSach
+          : [];
+
+      if (list.length === 0) {
+        elements.recentList.innerHTML =
+          '<div class="empty-message">' +
+          "Chưa có dữ liệu" +
+          "</div>";
+
+        return;
+      }
+
+      elements.recentList.innerHTML =
+        list.map(function(item) {
+          return (
+            '<div class="student-row">' +
+              "<strong>" +
+                escapeHtml(item.hoTen) +
+                " - " +
+                escapeHtml(item.lop) +
+              "</strong>" +
+              '<div class="student-meta">' +
+                "Mã: " +
+                escapeHtml(item.maQR) +
+              "</div>" +
+              '<div class="student-meta">' +
+                "Thời gian: " +
+                escapeHtml(item.thoiGian) +
+              "</div>" +
+            "</div>"
+          );
+        }).join("");
+    }
+
+    function renderAbsentStudents(result) {
+      const list =
+        result &&
+        result.thanhCong &&
+        Array.isArray(result.danhSach)
+          ? result.danhSach
+          : [];
+
+      if (list.length === 0
